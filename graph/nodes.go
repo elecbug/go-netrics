@@ -2,40 +2,42 @@ package graph
 
 import (
 	err "github.com/elecbug/go-graphtric/err"
+	"github.com/elecbug/go-graphtric/graph/gtype"
+	"github.com/elecbug/go-graphtric/graph/node"
 )
 
 type Nodes struct {
-	values  map[Identifier]*Node
-	nameMap map[string][]Identifier
+	nodes   map[gtype.Identifier]*node.Node
+	nameMap map[string][]gtype.Identifier
 }
 
 func newNodes(cap int) *Nodes {
 	return &Nodes{
-		values:  make(map[Identifier]*Node, cap),
-		nameMap: make(map[string][]Identifier, cap),
+		nodes:   make(map[gtype.Identifier]*node.Node, cap),
+		nameMap: make(map[string][]gtype.Identifier, cap),
 	}
 }
 
-func (ns *Nodes) insert(node *Node) error {
-	if _, exists := ns.values[node.identifier]; exists {
-		return err.AlreadyNode(node.identifier.String())
+func (ns *Nodes) insert(node *node.Node) error {
+	if _, exists := ns.nodes[node.ID()]; exists {
+		return err.AlreadyNode(node.ID().String())
 	} else {
-		ns.values[node.identifier] = node
+		ns.nodes[node.ID()] = node
 
 		if ns.nameMap[node.Name] == nil {
-			ns.nameMap[node.Name] = make([]Identifier, 0)
+			ns.nameMap[node.Name] = make([]gtype.Identifier, 0)
 		}
 
-		ns.nameMap[node.Name] = append(ns.nameMap[node.Name], node.identifier)
+		ns.nameMap[node.Name] = append(ns.nameMap[node.Name], node.ID())
 
 		return nil
 	}
 }
 
-func (ns *Nodes) remove(identifier Identifier) error {
-	if _, exists := ns.values[identifier]; exists {
-		name := ns.values[identifier].Name
-		delete(ns.values, identifier)
+func (ns *Nodes) remove(identifier gtype.Identifier) error {
+	if _, exists := ns.nodes[identifier]; exists {
+		name := ns.nodes[identifier].Name
+		delete(ns.nodes, identifier)
 
 		for i := 0; i < len(ns.nameMap[name]); i++ {
 			if ns.nameMap[name][i] == identifier {
@@ -50,16 +52,16 @@ func (ns *Nodes) remove(identifier Identifier) error {
 	}
 }
 
-func (ns *Nodes) find(identifier Identifier) *Node {
-	return ns.values[identifier]
+func (ns *Nodes) find(identifier gtype.Identifier) *node.Node {
+	return ns.nodes[identifier]
 }
 
-func (ns *Nodes) findAll(name string) []*Node {
+func (ns *Nodes) findAll(name string) []*node.Node {
 	ids := ns.nameMap[name]
-	var result = make([]*Node, len(ids))
+	var result = make([]*node.Node, len(ids))
 
 	for i, id := range ids {
-		result[i] = ns.values[id]
+		result[i] = ns.nodes[id]
 	}
 
 	return result
