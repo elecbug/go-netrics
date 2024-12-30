@@ -3,7 +3,7 @@ package graph
 import (
 	"errors"
 
-	err_msg "github.com/elecbug/go-graphtric/err/graph"
+	err_msg "github.com/elecbug/go-graphtric/err"
 )
 
 type Nodes struct {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math"
 
-	err_msg "github.com/elecbug/go-graphtric/err/graph"
+	err_msg "github.com/elecbug/go-graphtric/err"
 )
 
 type Graph struct {
