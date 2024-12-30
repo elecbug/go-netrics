@@ -8,11 +8,10 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/elecbug/go-graphtric/graph"
-	"github.com/elecbug/go-graphtric/graph/gtype"
 )
 
 func TestAlgorithm(t *testing.T) {
-	g := graph.NewGraph(gtype.UndirectedUnweighted, 100)
+	g := graph.NewGraph(graph.UndirectedUnweighted, 100)
 
 	for i := 0; i < 100; i++ {
 		g.AddNode(fmt.Sprintf("%3d", i))
@@ -22,10 +21,10 @@ func TestAlgorithm(t *testing.T) {
 
 	for i := 0; i < g.Size(); i++ {
 		r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(i)))
-		from := gtype.Identifier(r.Intn(g.Size()))
+		from := graph.Identifier(r.Intn(g.Size()))
 
 		r = rand.New(rand.NewSource(time.Now().UnixNano() + int64(i*i)))
-		to := gtype.Identifier(r.Intn(g.Size()))
+		to := graph.Identifier(r.Intn(g.Size()))
 
 		t.Logf("%d - %d", from, to)
 
@@ -38,7 +37,7 @@ func TestAlgorithm(t *testing.T) {
 
 	t.Logf("%v\n", g.ToMatrix())
 
-	dist, nodes := g.ShortestPath(gtype.Identifier(0), gtype.Identifier(1))
+	dist, nodes := g.ShortestPath(graph.Identifier(0), graph.Identifier(1))
 
 	t.Logf("dist: %d, nodes: %v\n", dist, nodes)
 }

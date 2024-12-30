@@ -2,21 +2,19 @@ package graph
 
 import (
 	"math"
-
-	"github.com/elecbug/go-graphtric/graph/gtype"
 )
 
-func (g Graph) ShortestPath(start, end gtype.Identifier) (uint, []gtype.Identifier) {
-	if g.graphType == gtype.DirectedWeighted || g.graphType == gtype.UndirectedWeighted {
+func (g Graph) ShortestPath(start, end Identifier) (uint, []Identifier) {
+	if g.graphType == DirectedWeighted || g.graphType == UndirectedWeighted {
 		return weightedShortestPath(g.ToMatrix(), start, end)
-	} else if g.graphType == gtype.DirectedUnweighted || g.graphType == gtype.UndirectedUnweighted {
+	} else if g.graphType == DirectedUnweighted || g.graphType == UndirectedUnweighted {
 		return unweightedShortestPath(g.ToMatrix(), start, end)
 	} else {
 		return math.MaxUint, nil
 	}
 }
 
-func weightedShortestPath(m gtype.Matrix, start, end gtype.Identifier) (uint, []gtype.Identifier) {
+func weightedShortestPath(m Matrix, start, end Identifier) (uint, []Identifier) {
 	const inf uint = math.MaxUint
 	n := len(m)
 
@@ -62,10 +60,10 @@ func weightedShortestPath(m gtype.Matrix, start, end gtype.Identifier) (uint, []
 		}
 	}
 
-	path := []gtype.Identifier{}
+	path := []Identifier{}
 
 	for at := int(end); at != -1; at = prev[at] {
-		path = append(path, gtype.Identifier(at))
+		path = append(path, Identifier(at))
 	}
 
 	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
@@ -79,7 +77,7 @@ func weightedShortestPath(m gtype.Matrix, start, end gtype.Identifier) (uint, []
 	return dist[end], path
 }
 
-func unweightedShortestPath(m gtype.Matrix, start, end gtype.Identifier) (uint, []gtype.Identifier) {
+func unweightedShortestPath(m Matrix, start, end Identifier) (uint, []Identifier) {
 	const inf uint = math.MaxUint
 	n := len(m)
 
@@ -111,10 +109,10 @@ func unweightedShortestPath(m gtype.Matrix, start, end gtype.Identifier) (uint, 
 		}
 	}
 
-	path := []gtype.Identifier{}
+	path := []Identifier{}
 
 	for at := int(end); at != -1; at = prev[at] {
-		path = append(path, gtype.Identifier(at))
+		path = append(path, Identifier(at))
 	}
 
 	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {

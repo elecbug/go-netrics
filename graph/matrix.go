@@ -1,3 +1,3 @@
-package gtype
+package graph
 
 type Matrix [][]uint
