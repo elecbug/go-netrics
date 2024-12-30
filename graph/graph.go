@@ -73,13 +73,17 @@ func (g *Graph) AddWeightEdge(from, to Identifier, weight uint) error {
 		return err.NotExistNode(to.String())
 	}
 
-	g.nodes.find(from).addEdge(g.nodes.find(to), weight)
+	g.nodes.find(from).addEdge(to, weight)
+
+	if g.graphType == UndirectedUnweighted || g.graphType == UndirectedWeighted {
+		g.nodes.find(to).addEdge(from, weight)
+	}
 
 	return nil
 }
 
 func (g *Graph) ToMatrix() [][]uint {
-	size := len(g.nodes.values)
+	size := g.nowID
 	matrix := make([][]uint, size)
 
 	for i := range matrix {
@@ -91,9 +95,7 @@ func (g *Graph) ToMatrix() [][]uint {
 
 	for from_id, from := range g.nodes.values {
 		for _, from_edge := range from.edges {
-			to_id := from_edge.to.ID()
-
-			matrix[from_id][to_id] = from_edge.weight
+			matrix[from_id][from_edge.to] = from_edge.weight
 		}
 	}
 
