@@ -1,9 +1,7 @@
 package graph
 
 import (
-	"errors"
-
-	err_msg "github.com/elecbug/go-graphtric/err"
+	err "github.com/elecbug/go-graphtric/err"
 )
 
 type Nodes struct {
@@ -20,7 +18,7 @@ func newNodes(cap int) *Nodes {
 
 func (ns *Nodes) insert(node *Node) error {
 	if _, exists := ns.values[node.identifier]; exists {
-		return errors.New(err_msg.AlreadyNode(node.identifier.String()))
+		return err.AlreadyNode(node.identifier.String())
 	} else {
 		ns.values[node.identifier] = node
 
@@ -48,7 +46,7 @@ func (ns *Nodes) remove(identifier Identifier) error {
 
 		return nil
 	} else {
-		return errors.New(err_msg.NotExistNode(identifier.String()))
+		return err.NotExistNode(identifier.String())
 	}
 }
 

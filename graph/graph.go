@@ -1,11 +1,10 @@
 package graph
 
 import (
-	"errors"
 	"fmt"
 	"math"
 
-	err_msg "github.com/elecbug/go-graphtric/err"
+	err "github.com/elecbug/go-graphtric/err"
 )
 
 type Graph struct {
@@ -44,7 +43,7 @@ func (g *Graph) FindNode(identifier Identifier) (*Node, error) {
 	if result != nil {
 		return result, nil
 	} else {
-		return nil, errors.New(err_msg.NotExistNode(identifier.String()))
+		return nil, err.NotExistNode(identifier.String())
 	}
 }
 
@@ -54,7 +53,7 @@ func (g *Graph) FindNodesByName(name string) ([]*Node, error) {
 	if result != nil {
 		return result, nil
 	} else {
-		return nil, errors.New(err_msg.NotExistNode(name))
+		return nil, err.NotExistNode(name)
 	}
 }
 
@@ -64,14 +63,14 @@ func (g *Graph) AddEdge(from, to Identifier) error {
 
 func (g *Graph) AddWeightEdge(from, to Identifier, weight uint) error {
 	if (g.graphType == DirectedUnweighted || g.graphType == UndirectedUnweighted) && weight != 0 {
-		return errors.New(err_msg.InvalidEdge(g.graphType.String(), fmt.Sprintf("weight: %d", weight)))
+		return err.InvalidEdge(g.graphType.String(), fmt.Sprintf("weight: %d", weight))
 	}
 
 	if g.nodes.find(from) == nil {
-		return errors.New(err_msg.NotExistNode(from.String()))
+		return err.NotExistNode(from.String())
 	}
 	if g.nodes.find(to) == nil {
-		return errors.New(err_msg.NotExistNode(to.String()))
+		return err.NotExistNode(to.String())
 	}
 
 	g.nodes.find(from).addEdge(g.nodes.find(to), weight)
