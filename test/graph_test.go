@@ -10,7 +10,7 @@ import (
 func TestGraph(t *testing.T) {
 	g := graph.NewGraph(graph.UndirectedUnweighted, 10)
 
-	err := g.AddNode("first")
+	_, err := g.AddNode("first")
 
 	if err != nil {
 		t.Fatal(err)

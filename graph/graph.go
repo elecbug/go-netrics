@@ -21,17 +21,17 @@ func NewGraph(graphType GraphType, capacity int) *Graph {
 	}
 }
 
-func (g *Graph) AddNode(name string) error {
+func (g *Graph) AddNode(name string) (*Node, error) {
 	node := newNode(g.nowID, name)
 	err := g.nodes.insert(node)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	g.nowID++
 
-	return nil
+	return node, nil
 }
 
 func (g *Graph) RemoveNode(identifier Identifier) error {
