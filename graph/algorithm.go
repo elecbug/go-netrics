@@ -4,6 +4,8 @@ import (
 	"math"
 )
 
+const UINF uint = math.MaxUint
+
 func (g Graph) ShortestPath(start, end Identifier) (uint, []Identifier) {
 	if g.graphType == DirectedWeighted || g.graphType == UndirectedWeighted {
 		return weightedShortestPath(g.ToMatrix(), start, end)
@@ -15,11 +17,10 @@ func (g Graph) ShortestPath(start, end Identifier) (uint, []Identifier) {
 }
 
 func weightedShortestPath(m Matrix, start, end Identifier) (uint, []Identifier) {
-	const inf uint = math.MaxUint
 	n := len(m)
 
 	if int(start) >= n || int(end) >= n {
-		return inf, nil
+		return UINF, nil
 	}
 
 	dist := make([]uint, n)
@@ -27,14 +28,14 @@ func weightedShortestPath(m Matrix, start, end Identifier) (uint, []Identifier) 
 	visited := make([]bool, n)
 
 	for i := range dist {
-		dist[i] = inf
+		dist[i] = UINF
 		prev[i] = -1
 	}
 
 	dist[start] = 0
 
 	for {
-		minDist := inf
+		minDist := UINF
 		u := -1
 		for i := 0; i < n; i++ {
 			if !visited[i] && dist[i] < minDist {
@@ -70,26 +71,25 @@ func weightedShortestPath(m Matrix, start, end Identifier) (uint, []Identifier) 
 		path[i], path[j] = path[j], path[i]
 	}
 
-	if dist[end] == inf {
-		return inf, nil
+	if dist[end] == UINF {
+		return UINF, nil
 	}
 
 	return dist[end], path
 }
 
 func unweightedShortestPath(m Matrix, start, end Identifier) (uint, []Identifier) {
-	const inf uint = math.MaxUint
 	n := len(m)
 
 	if int(start) >= n || int(end) >= n {
-		return inf, nil
+		return UINF, nil
 	}
 
 	dist := make([]uint, n)
 	prev := make([]int, n)
 
 	for i := range dist {
-		dist[i] = inf
+		dist[i] = UINF
 		prev[i] = -1
 	}
 
@@ -101,7 +101,7 @@ func unweightedShortestPath(m Matrix, start, end Identifier) (uint, []Identifier
 		queue = queue[1:]
 
 		for v := 0; v < n; v++ {
-			if m[u][v] == 0 && dist[v] == inf {
+			if m[u][v] == 0 && dist[v] == UINF {
 				dist[v] = dist[u] + 1
 				prev[v] = u
 				queue = append(queue, v)
@@ -119,8 +119,8 @@ func unweightedShortestPath(m Matrix, start, end Identifier) (uint, []Identifier
 		path[i], path[j] = path[j], path[i]
 	}
 
-	if dist[end] == inf {
-		return inf, nil
+	if dist[end] == UINF {
+		return UINF, nil
 	}
 
 	return dist[end], path
