@@ -40,4 +40,5 @@ func (n *Node) Up() {
 
 func (n *Node) Down() {
 	n.alive = false
+	n.edges = []*Edge{}
 }
