@@ -5,13 +5,12 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/elecbug/go-graphtric/graph"
-	"github.com/elecbug/go-graphtric/graph/gtype"
 )
 
 func TestGraph(t *testing.T) {
-	g := graph.NewGraph(gtype.UndirectedUnweighted, 10)
+	g := graph.NewGraph(graph.UndirectedUnweighted, 10)
 
-	err := g.AddNode("first")
+	_, err := g.AddNode("first")
 
 	if err != nil {
 		t.Fatal(err)

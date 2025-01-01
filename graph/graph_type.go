@@ -1,4 +1,4 @@
-package gtype
+package graph
 
 type GraphType int
 

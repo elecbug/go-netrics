@@ -1,6 +1,8 @@
-package gtype
+package graph
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Identifier uint
 

@@ -7,38 +7,56 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/elecbug/go-graphtric/algorithm"
 	"github.com/elecbug/go-graphtric/graph"
-	"github.com/elecbug/go-graphtric/graph/gtype"
 )
 
 func TestAlgorithm(t *testing.T) {
-	g := graph.NewGraph(gtype.UndirectedUnweighted, 100)
+	cap := 200
+	g := graph.NewGraph(graph.UndirectedUnweighted, cap)
 
-	for i := 0; i < 100; i++ {
-		g.AddNode(fmt.Sprintf("%3d", i))
+	for i := 0; i < cap; i++ {
+		g.AddNode(fmt.Sprintf("%4d", i))
 	}
 
 	t.Logf("%s\n", spew.Sdump(g))
 
-	for i := 0; i < g.Size(); i++ {
+	for i := 0; i < g.Size()*g.Size()/100; i++ {
 		r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(i)))
-		from := gtype.Identifier(r.Intn(g.Size()))
+		from := graph.Identifier(r.Intn(g.Size()))
 
 		r = rand.New(rand.NewSource(time.Now().UnixNano() + int64(i*i)))
-		to := gtype.Identifier(r.Intn(g.Size()))
+		to := graph.Identifier(r.Intn(g.Size()))
 
 		t.Logf("%d - %d", from, to)
 
-		err := g.AddEdge(from, to)
+		g.AddEdge(from, to)
 
-		if err != nil {
-			t.Errorf("%v", err)
-		}
+		// if err != nil {
+		// 	t.Logf("%v", err)
+		// }
 	}
 
-	t.Logf("%v\n", g.ToMatrix())
+	// t.Logf("\n%s\n", g.ToMatrix().String())
 
-	dist, nodes := g.ShortestPath(gtype.Identifier(0), gtype.Identifier(1))
+	s := time.Now()
 
-	t.Logf("dist: %d, nodes: %v\n", dist, nodes)
+	pm := algorithm.NewParallelMachine(40)
+	path := pm.Diameter(g)
+	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
+
+	duration := time.Since(s)
+	t.Logf("Execution time: %s", duration)
+
+	s = time.Now()
+
+	um := algorithm.NewUniMachine()
+	path = um.Diameter(g)
+	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
+
+	duration = time.Since(s)
+	t.Logf("Execution time: %s", duration)
+
+	// dist, nodes := pm.ShortestPath(g, graph.Identifier(0), graph.Identifier(1))
+	// t.Logf("dist: %d, nodes: %v\n", dist, nodes)
 }

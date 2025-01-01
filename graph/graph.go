@@ -5,17 +5,15 @@ import (
 	"math"
 
 	err "github.com/elecbug/go-graphtric/err"
-	"github.com/elecbug/go-graphtric/graph/gtype"
-	"github.com/elecbug/go-graphtric/graph/node"
 )
 
 type Graph struct {
-	nodes     *Nodes
-	nowID     gtype.Identifier
-	graphType gtype.GraphType
+	nodes     *graphNodes
+	nowID     Identifier
+	graphType GraphType
 }
 
-func NewGraph(graphType gtype.GraphType, capacity int) *Graph {
+func NewGraph(graphType GraphType, capacity int) *Graph {
 	return &Graph{
 		nodes:     newNodes(capacity),
 		nowID:     0,
@@ -23,24 +21,24 @@ func NewGraph(graphType gtype.GraphType, capacity int) *Graph {
 	}
 }
 
-func (g *Graph) AddNode(name string) error {
-	node := node.NewNode(g.nowID, name)
+func (g *Graph) AddNode(name string) (*Node, error) {
+	node := newNode(g.nowID, name)
 	err := g.nodes.insert(node)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	g.nowID++
 
-	return nil
+	return node, nil
 }
 
-func (g *Graph) RemoveNode(identifier gtype.Identifier) error {
+func (g *Graph) RemoveNode(identifier Identifier) error {
 	return g.nodes.remove(identifier)
 }
 
-func (g *Graph) FindNode(identifier gtype.Identifier) (*node.Node, error) {
+func (g *Graph) FindNode(identifier Identifier) (*Node, error) {
 	result := g.nodes.find(identifier)
 
 	if result != nil {
@@ -50,7 +48,7 @@ func (g *Graph) FindNode(identifier gtype.Identifier) (*node.Node, error) {
 	}
 }
 
-func (g *Graph) FindNodesByName(name string) ([]*node.Node, error) {
+func (g *Graph) FindNodesByName(name string) ([]*Node, error) {
 	result := g.nodes.findAll(name)
 
 	if result != nil {
@@ -60,13 +58,13 @@ func (g *Graph) FindNodesByName(name string) ([]*node.Node, error) {
 	}
 }
 
-func (g *Graph) AddEdge(from, to gtype.Identifier) error {
+func (g *Graph) AddEdge(from, to Identifier) error {
 	return g.AddWeightEdge(from, to, 0)
 }
 
-func (g *Graph) AddWeightEdge(from, to gtype.Identifier, weight uint) error {
-	if (g.graphType == gtype.DirectedUnweighted || g.graphType == gtype.UndirectedUnweighted) && weight != 0 {
-		return err.InvalidEdge(g.graphType.String(), fmt.Sprintf("weight: %d", weight))
+func (g *Graph) AddWeightEdge(from, to Identifier, distance Distance) error {
+	if (g.graphType == DirectedUnweighted || g.graphType == UndirectedUnweighted) && distance != 0 {
+		return err.InvalidEdge(g.graphType.String(), fmt.Sprintf("weight: %d", distance))
 	}
 
 	if from == to {
@@ -86,21 +84,21 @@ func (g *Graph) AddWeightEdge(from, to gtype.Identifier, weight uint) error {
 		}
 	}
 
-	g.nodes.find(from).AddEdge(to, weight)
+	g.nodes.find(from).addEdge(to, distance)
 
-	if g.graphType == gtype.UndirectedUnweighted || g.graphType == gtype.UndirectedWeighted {
-		g.nodes.find(to).AddEdge(from, weight)
+	if g.graphType == UndirectedUnweighted || g.graphType == UndirectedWeighted {
+		g.nodes.find(to).addEdge(from, distance)
 	}
 
 	return nil
 }
 
-func (g *Graph) ToMatrix() gtype.Matrix {
+func (g *Graph) ToMatrix() Matrix {
 	size := g.nowID
-	matrix := make([][]uint, size)
+	matrix := make([][]Distance, size)
 
 	for i := range matrix {
-		matrix[i] = make([]uint, size)
+		matrix[i] = make([]Distance, size)
 		for j := range matrix[i] {
 			matrix[i][j] = math.MaxUint
 		}
@@ -108,7 +106,7 @@ func (g *Graph) ToMatrix() gtype.Matrix {
 
 	for from_id, from := range g.nodes.nodes {
 		for _, from_edge := range from.Edges() {
-			matrix[from_id][from_edge.To()] = from_edge.Weight()
+			matrix[from_id][from_edge.To()] = from_edge.Distance()
 		}
 	}
 
@@ -117,4 +115,8 @@ func (g *Graph) ToMatrix() gtype.Matrix {
 
 func (g Graph) Size() int {
 	return len(g.nodes.nodes)
+}
+
+func (g Graph) Type() GraphType {
+	return g.graphType
 }
