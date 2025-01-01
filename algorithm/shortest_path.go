@@ -6,7 +6,15 @@ import (
 	"github.com/elecbug/go-graphtric/graph"
 )
 
-func (pm ParallelMachine) ShortestPath(g *graph.Graph, start, end graph.Identifier) (graph.Distance, []graph.Identifier) {
+func (um *UniMachine) ShortestPath(g *graph.Graph, start, end graph.Identifier) (graph.Distance, []graph.Identifier) {
+	return shortestPath(g, start, end)
+}
+
+func (pm *ParallelMachine) ShortestPath(g *graph.Graph, start, end graph.Identifier) (graph.Distance, []graph.Identifier) {
+	return shortestPath(g, start, end)
+}
+
+func shortestPath(g *graph.Graph, start, end graph.Identifier) (graph.Distance, []graph.Identifier) {
 	if g.Type() == graph.DirectedWeighted || g.Type() == graph.UndirectedWeighted {
 		return weightedShortestPath(g.ToMatrix(), start, end)
 	} else if g.Type() == graph.DirectedUnweighted || g.Type() == graph.UndirectedUnweighted {

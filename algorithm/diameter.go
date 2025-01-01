@@ -6,6 +6,34 @@ import (
 	"github.com/elecbug/go-graphtric/graph"
 )
 
+func (um UniMachine) Diameter(g *graph.Graph) (graph.Distance, []graph.Identifier) {
+	n := len(g.ToMatrix())
+
+	var maxDistance graph.Distance = 0
+	var longestPath []graph.Identifier
+
+	for start := graph.Identifier(0); start < graph.Identifier(n); start++ {
+		for end := graph.Identifier(0); end < graph.Identifier(n); end++ {
+			if start == end {
+				continue
+			}
+
+			distance, path := um.ShortestPath(g, start, end)
+
+			if distance == graph.INF {
+				continue
+			}
+
+			if distance > maxDistance {
+				maxDistance = distance
+				longestPath = path
+			}
+		}
+	}
+
+	return maxDistance, longestPath
+}
+
 func (pm ParallelMachine) Diameter(g *graph.Graph) (graph.Distance, []graph.Identifier) {
 	type result struct {
 		distance graph.Distance
