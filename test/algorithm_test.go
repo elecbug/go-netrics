@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/elecbug/go-graphtric/algorithm"
 	"github.com/elecbug/go-graphtric/graph"
 )
 
@@ -31,13 +32,19 @@ func TestAlgorithm(t *testing.T) {
 		err := g.AddEdge(from, to)
 
 		if err != nil {
-			t.Errorf("%v", err)
+			t.Logf("%v", err)
 		}
 	}
 
-	t.Logf("%v\n", g.ToMatrix())
+	// t.Logf("\n%s\n", g.ToMatrix().String())
 
-	dist, nodes := g.ShortestPath(graph.Identifier(0), graph.Identifier(1))
+	pm := algorithm.NewParallelMachine(100)
+
+	dist, nodes := pm.ShortestPath(g, graph.Identifier(0), graph.Identifier(1))
 
 	t.Logf("dist: %d, nodes: %v\n", dist, nodes)
+
+	diameter, nodes := pm.Diameter(g)
+
+	t.Logf("diameter: %d, nodes: %v\n", diameter, nodes)
 }

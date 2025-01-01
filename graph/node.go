@@ -16,8 +16,8 @@ func newNode(identifier Identifier, name string) *Node {
 	}
 }
 
-func (n *Node) addEdge(to Identifier, weight uint) {
-	n.edges = append(n.edges, newEdge(to, weight))
+func (n *Node) addEdge(to Identifier, distance Distance) {
+	n.edges = append(n.edges, newEdge(to, distance))
 }
 
 func (n Node) ID() Identifier {

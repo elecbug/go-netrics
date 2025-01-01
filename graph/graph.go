@@ -8,7 +8,7 @@ import (
 )
 
 type Graph struct {
-	nodes     *Nodes
+	nodes     *graphNodes
 	nowID     Identifier
 	graphType GraphType
 }
@@ -62,9 +62,9 @@ func (g *Graph) AddEdge(from, to Identifier) error {
 	return g.AddWeightEdge(from, to, 0)
 }
 
-func (g *Graph) AddWeightEdge(from, to Identifier, weight uint) error {
-	if (g.graphType == DirectedUnweighted || g.graphType == UndirectedUnweighted) && weight != 0 {
-		return err.InvalidEdge(g.graphType.String(), fmt.Sprintf("weight: %d", weight))
+func (g *Graph) AddWeightEdge(from, to Identifier, distance Distance) error {
+	if (g.graphType == DirectedUnweighted || g.graphType == UndirectedUnweighted) && distance != 0 {
+		return err.InvalidEdge(g.graphType.String(), fmt.Sprintf("weight: %d", distance))
 	}
 
 	if from == to {
@@ -84,10 +84,10 @@ func (g *Graph) AddWeightEdge(from, to Identifier, weight uint) error {
 		}
 	}
 
-	g.nodes.find(from).addEdge(to, weight)
+	g.nodes.find(from).addEdge(to, distance)
 
 	if g.graphType == UndirectedUnweighted || g.graphType == UndirectedWeighted {
-		g.nodes.find(to).addEdge(from, weight)
+		g.nodes.find(to).addEdge(from, distance)
 	}
 
 	return nil
@@ -95,10 +95,10 @@ func (g *Graph) AddWeightEdge(from, to Identifier, weight uint) error {
 
 func (g *Graph) ToMatrix() Matrix {
 	size := g.nowID
-	matrix := make([][]uint, size)
+	matrix := make([][]Distance, size)
 
 	for i := range matrix {
-		matrix[i] = make([]uint, size)
+		matrix[i] = make([]Distance, size)
 		for j := range matrix[i] {
 			matrix[i][j] = math.MaxUint
 		}
@@ -106,7 +106,7 @@ func (g *Graph) ToMatrix() Matrix {
 
 	for from_id, from := range g.nodes.nodes {
 		for _, from_edge := range from.Edges() {
-			matrix[from_id][from_edge.To()] = from_edge.Weight()
+			matrix[from_id][from_edge.To()] = from_edge.Distance()
 		}
 	}
 
@@ -115,4 +115,8 @@ func (g *Graph) ToMatrix() Matrix {
 
 func (g Graph) Size() int {
 	return len(g.nodes.nodes)
+}
+
+func (g Graph) Type() GraphType {
+	return g.graphType
 }

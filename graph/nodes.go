@@ -4,19 +4,19 @@ import (
 	err "github.com/elecbug/go-graphtric/err"
 )
 
-type Nodes struct {
+type graphNodes struct {
 	nodes   map[Identifier]*Node
 	nameMap map[string][]Identifier
 }
 
-func newNodes(cap int) *Nodes {
-	return &Nodes{
+func newNodes(cap int) *graphNodes {
+	return &graphNodes{
 		nodes:   make(map[Identifier]*Node, cap),
 		nameMap: make(map[string][]Identifier, cap),
 	}
 }
 
-func (ns *Nodes) insert(node *Node) error {
+func (ns *graphNodes) insert(node *Node) error {
 	if _, exists := ns.nodes[node.ID()]; exists {
 		return err.AlreadyNode(node.ID().String())
 	} else {
@@ -32,7 +32,7 @@ func (ns *Nodes) insert(node *Node) error {
 	}
 }
 
-func (ns *Nodes) remove(identifier Identifier) error {
+func (ns *graphNodes) remove(identifier Identifier) error {
 	if _, exists := ns.nodes[identifier]; exists {
 		name := ns.nodes[identifier].Name
 		delete(ns.nodes, identifier)
@@ -50,11 +50,11 @@ func (ns *Nodes) remove(identifier Identifier) error {
 	}
 }
 
-func (ns *Nodes) find(identifier Identifier) *Node {
+func (ns *graphNodes) find(identifier Identifier) *Node {
 	return ns.nodes[identifier]
 }
 
-func (ns *Nodes) findAll(name string) []*Node {
+func (ns *graphNodes) findAll(name string) []*Node {
 	ids := ns.nameMap[name]
 	var result = make([]*Node, len(ids))
 

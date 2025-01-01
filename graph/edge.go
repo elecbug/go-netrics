@@ -1,14 +1,14 @@
 package graph
 
 type Edge struct {
-	to     Identifier
-	weight uint
+	to       Identifier
+	distance Distance
 }
 
-func newEdge(to Identifier, weight uint) *Edge {
+func newEdge(to Identifier, distance Distance) *Edge {
 	return &Edge{
-		to:     to,
-		weight: weight,
+		to:       to,
+		distance: distance,
 	}
 }
 
@@ -16,6 +16,6 @@ func (e Edge) To() Identifier {
 	return e.to
 }
 
-func (e Edge) Weight() uint {
-	return e.weight
+func (e Edge) Distance() Distance {
+	return e.distance
 }
