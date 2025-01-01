@@ -42,8 +42,8 @@ func TestAlgorithm(t *testing.T) {
 	s := time.Now()
 
 	pm := algorithm.NewParallelMachine(40)
-	diameter, nodes := pm.Diameter(g)
-	t.Logf("diameter: %d, nodes: %v\n", diameter, nodes)
+	path := pm.Diameter(g)
+	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
 
 	duration := time.Since(s)
 	t.Logf("Execution time: %s", duration)
@@ -51,8 +51,8 @@ func TestAlgorithm(t *testing.T) {
 	s = time.Now()
 
 	um := algorithm.NewUniMachine()
-	diameter, nodes = um.Diameter(g)
-	t.Logf("diameter: %d, nodes: %v\n", diameter, nodes)
+	path = um.Diameter(g)
+	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
 
 	duration = time.Since(s)
 	t.Logf("Execution time: %s", duration)

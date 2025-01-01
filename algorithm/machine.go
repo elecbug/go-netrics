@@ -1,16 +1,9 @@
 package algorithm
 
-type ComputeMachine interface {
-	ShortestPath()
-	Diameter()
-}
-
 type UniMachine struct {
-	ComputeMachine
 }
 
 type ParallelMachine struct {
-	ComputeMachine
 	maxCore uint
 }
 

@@ -6,7 +6,7 @@ import (
 	"github.com/elecbug/go-graphtric/graph"
 )
 
-func (um UniMachine) Diameter(g *graph.Graph) (graph.Distance, []graph.Identifier) {
+func (um UniMachine) Diameter(g *graph.Graph) *graph.Path {
 	n := len(g.ToMatrix())
 
 	var maxDistance graph.Distance = 0
@@ -18,7 +18,7 @@ func (um UniMachine) Diameter(g *graph.Graph) (graph.Distance, []graph.Identifie
 				continue
 			}
 
-			distance, path := um.ShortestPath(g, start, end)
+			distance, nodes := ShortestPath(g, start, end)
 
 			if distance == graph.INF {
 				continue
@@ -26,19 +26,15 @@ func (um UniMachine) Diameter(g *graph.Graph) (graph.Distance, []graph.Identifie
 
 			if distance > maxDistance {
 				maxDistance = distance
-				longestPath = path
+				longestPath = nodes
 			}
 		}
 	}
 
-	return maxDistance, longestPath
+	return graph.NewPath(maxDistance, longestPath)
 }
 
-func (pm ParallelMachine) Diameter(g *graph.Graph) (graph.Distance, []graph.Identifier) {
-	type result struct {
-		distance graph.Distance
-		path     []graph.Identifier
-	}
+func (pm ParallelMachine) Diameter(g *graph.Graph) *graph.Path {
 	type to struct {
 		start graph.Identifier
 		end   graph.Identifier
@@ -48,7 +44,7 @@ func (pm ParallelMachine) Diameter(g *graph.Graph) (graph.Distance, []graph.Iden
 
 	jobChan := make(chan to)
 
-	resultChan := make(chan result)
+	resultChan := make(chan graph.Path)
 	workerCount := pm.maxCore
 
 	var wg sync.WaitGroup
@@ -58,10 +54,10 @@ func (pm ParallelMachine) Diameter(g *graph.Graph) (graph.Distance, []graph.Iden
 		go func() {
 			defer wg.Done()
 			for job := range jobChan {
-				distance, path := pm.ShortestPath(g, job.start, job.end)
+				distance, nodes := ShortestPath(g, job.start, job.end)
 
 				if distance != graph.INF {
-					resultChan <- result{distance, path}
+					resultChan <- *graph.NewPath(distance, nodes)
 				}
 			}
 		}()
@@ -87,11 +83,11 @@ func (pm ParallelMachine) Diameter(g *graph.Graph) (graph.Distance, []graph.Iden
 	var longestPath []graph.Identifier
 
 	for result := range resultChan {
-		if result.distance > maxDistance {
-			maxDistance = result.distance
-			longestPath = result.path
+		if result.Distance() > maxDistance {
+			maxDistance = result.Distance()
+			longestPath = result.Nodes()
 		}
 	}
 
-	return maxDistance, longestPath
+	return graph.NewPath(maxDistance, longestPath)
 }
