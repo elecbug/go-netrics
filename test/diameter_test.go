@@ -11,7 +11,7 @@ import (
 	"github.com/elecbug/go-graphtric/graph"
 )
 
-func TestAlgorithm(t *testing.T) {
+func TestDiameter(t *testing.T) {
 	cap := 200
 	g := graph.NewGraph(graph.UndirectedUnweighted, cap)
 
