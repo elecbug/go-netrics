@@ -131,6 +131,6 @@ func (g Graph) Updated() bool {
 	return g.updated
 }
 
-func (g *Graph) ComputePaths() {
+func (g *Graph) Update() {
 	g.updated = true
 }

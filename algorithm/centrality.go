@@ -37,6 +37,7 @@ func (u *Unit) BetweennessCentrality(g *graph.Graph) map[graph.Identifier]float6
 
 	return centrality
 }
+
 func (pu *ParallelUnit) BetweennessCentrality(g *graph.Graph) map[graph.Identifier]float64 {
 	if !g.Updated() || !pu.updated {
 		pu.computePaths(g)
