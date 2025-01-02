@@ -28,35 +28,48 @@ func TestAlgorithm(t *testing.T) {
 		r = rand.New(rand.NewSource(time.Now().UnixNano() + int64(i*i)))
 		to := graph.Identifier(r.Intn(g.Size()))
 
-		t.Logf("%d - %d", from, to)
+		// t.Logf("%d - %d", from, to)
 
 		g.AddEdge(from, to)
-
-		// if err != nil {
-		// 	t.Logf("%v", err)
-		// }
 	}
 
 	// t.Logf("\n%s\n", g.ToMatrix().String())
 
 	s := time.Now()
-
-	pm := algorithm.NewParallelMachine(40)
+	pm := algorithm.NewParallelUnit(40)
 	path := pm.Diameter(g)
 	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
-
 	duration := time.Since(s)
 	t.Logf("Execution time: %s", duration)
 
 	s = time.Now()
-
-	um := algorithm.NewUniMachine()
+	um := algorithm.NewUnit()
 	path = um.Diameter(g)
 	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
-
 	duration = time.Since(s)
 	t.Logf("Execution time: %s", duration)
 
-	// dist, nodes := pm.ShortestPath(g, graph.Identifier(0), graph.Identifier(1))
-	// t.Logf("dist: %d, nodes: %v\n", dist, nodes)
+	s = time.Now()
+	path = pm.Diameter(g)
+	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
+	duration = time.Since(s)
+	t.Logf("Execution time: %s", duration)
+
+	for i := 0; i < g.Size()*g.Size(); i++ {
+		r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(i)))
+		from := graph.Identifier(r.Intn(g.Size()))
+
+		r = rand.New(rand.NewSource(time.Now().UnixNano() + int64(i*i)))
+		to := graph.Identifier(r.Intn(g.Size()))
+
+		// t.Logf("%d - %d", from, to)
+
+		g.AddEdge(from, to)
+	}
+
+	s = time.Now()
+	path = pm.Diameter(g)
+	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
+	duration = time.Since(s)
+	t.Logf("Execution time: %s", duration)
 }
