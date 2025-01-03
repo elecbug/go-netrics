@@ -227,7 +227,7 @@ func unweightedShortestPath(matrix graph.Matrix, start, end graph.Identifier) *g
 		queue = queue[1:]
 
 		for v := 0; v < n; v++ {
-			if matrix[u][v] == 0 && dist[v] == graph.INF {
+			if matrix[u][v] == 1 && dist[v] == graph.INF {
 				dist[v] = dist[u] + 1
 				prev[v] = u
 				queue = append(queue, v)

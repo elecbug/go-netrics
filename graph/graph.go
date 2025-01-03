@@ -101,7 +101,7 @@ func (g *Graph) FindNodesByName(name string) ([]*Node, error) {
 //
 // Returns an error if the edge cannot be added.
 func (g *Graph) AddEdge(from, to Identifier) error {
-	return g.AddWeightEdge(from, to, 0)
+	return g.AddWeightEdge(from, to, 1)
 }
 
 // AddWeightEdge adds a weighted edge between two nodes in the graph.
@@ -113,7 +113,7 @@ func (g *Graph) AddEdge(from, to Identifier) error {
 // Returns an error if the edge cannot be added.
 func (g *Graph) AddWeightEdge(from, to Identifier, distance Distance) error {
 	// Check for invalid edge types and self-loops.
-	if (g.graphType == DirectedUnweighted || g.graphType == UndirectedUnweighted) && distance != 0 {
+	if (g.graphType == DirectedUnweighted || g.graphType == UndirectedUnweighted) && distance != 1 {
 		return err.InvalidEdge(g.graphType.String(), fmt.Sprintf("weight: %d", distance))
 	}
 

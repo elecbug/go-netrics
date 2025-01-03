@@ -1,6 +1,7 @@
 package algorithm
 
 import (
+	"math"
 	"sync"
 
 	"github.com/elecbug/go-graphtric/graph"
@@ -125,11 +126,6 @@ func (pu *ParallelUnit) BetweennessCentrality(g *graph.Graph) map[graph.Identifi
 // Returns:
 //   - A map where the keys are node identifiers and the values are the degree centrality scores.
 func (u *Unit) DegreeCentrality(g *graph.Graph) map[graph.Identifier]float64 {
-	if !g.Updated() || !u.updated {
-		// Recompute shortest paths if the graph or unit has been updated.
-		u.computePaths(g)
-	}
-
 	centrality := make(map[graph.Identifier]float64)
 
 	// Initialize centrality scores for all nodes to 0.
@@ -166,11 +162,6 @@ func (u *Unit) DegreeCentrality(g *graph.Graph) map[graph.Identifier]float64 {
 // Returns:
 //   - A map where the keys are node identifiers and the values are the degree centrality scores.
 func (pu *ParallelUnit) DegreeCentrality(g *graph.Graph) map[graph.Identifier]float64 {
-	if !g.Updated() || !pu.updated {
-		// Recompute shortest paths if the graph or unit has been updated.
-		pu.computePaths(g)
-	}
-
 	centrality := make(map[graph.Identifier]float64)
 
 	// Initialize centrality scores for all nodes to 0.
@@ -188,6 +179,7 @@ func (pu *ParallelUnit) DegreeCentrality(g *graph.Graph) map[graph.Identifier]fl
 	// Compute degree centrality in parallel.
 	for i := 0; i < len(matrix); i++ {
 		wg.Add(1)
+
 		go func(nodeIndex int) {
 			defer wg.Done()
 			count := 0.0
@@ -223,4 +215,137 @@ func (pu *ParallelUnit) DegreeCentrality(g *graph.Graph) map[graph.Identifier]fl
 	}
 
 	return centrality
+}
+
+// EigenvectorCentrality computes the eigenvector centrality of each node in the graph for a Unit.
+// Eigenvector centrality assigns scores to nodes based on the importance of their neighbors.
+// Parameters:
+//   - g: The graph to compute the eigenvector centrality for.
+//
+// Returns:
+//   - A map where the keys are node identifiers and the values are the eigenvector centrality scores.
+func (u *Unit) EigenvectorCentrality(g *graph.Graph, maxIter int, tol float64) map[graph.Identifier]float64 {
+	matrix := g.ToMatrix()
+	n := len(matrix)
+
+	// Initialize centrality scores with 1/n
+	centrality := make([]float64, n)
+	for i := 0; i < n; i++ {
+		centrality[i] = 1.0 / float64(n)
+	}
+
+	for iter := 0; iter < maxIter; iter++ {
+		newCentrality := make([]float64, n)
+
+		// Update centrality scores
+		for i := 0; i < n; i++ {
+			for j := 0; j < n; j++ {
+				if matrix[i][j] != graph.INF {
+					newCentrality[i] += float64(matrix[i][j].Int()) * centrality[j]
+				}
+			}
+		}
+
+		// Normalize the new centrality scores
+		norm := 0.0
+		for _, value := range newCentrality {
+			norm += value * value
+		}
+		norm = math.Sqrt(norm)
+
+		for i := 0; i < n; i++ {
+			newCentrality[i] /= norm
+		}
+
+		// Check for convergence
+		diff := 0.0
+		for i := 0; i < n; i++ {
+			diff += math.Abs(newCentrality[i] - centrality[i])
+		}
+
+		if diff < tol {
+			break
+		}
+
+		centrality = newCentrality
+	}
+
+	// Convert to map for output
+	result := make(map[graph.Identifier]float64)
+	for i := 0; i < n; i++ {
+		result[graph.Identifier(i)] = centrality[i]
+	}
+
+	return result
+}
+
+// EigenvectorCentrality computes the eigenvector centrality of each node in the graph for a ParallelUnit.
+// The computation is performed in parallel for better performance on larger graphs.
+// Parameters:
+//   - g: The graph to compute the eigenvector centrality for.
+//
+// Returns:
+//   - A map where the keys are node identifiers and the values are the eigenvector centrality scores.
+func (pu *ParallelUnit) EigenvectorCentrality(g *graph.Graph, maxIter int, tol float64) map[graph.Identifier]float64 {
+	matrix := g.ToMatrix()
+	n := len(matrix)
+
+	// Initialize centrality scores with 1/n
+	centrality := make([]float64, n)
+	for i := 0; i < n; i++ {
+		centrality[i] = 1.0 / float64(n)
+	}
+
+	for iter := 0; iter < maxIter; iter++ {
+		newCentrality := make([]float64, n)
+
+		var wg sync.WaitGroup
+
+		// Update centrality scores in parallel
+		for i := 0; i < n; i++ {
+			wg.Add(1)
+
+			go func(node int) {
+				defer wg.Done()
+				for j := 0; j < n; j++ {
+					if matrix[node][j] != graph.INF {
+						newCentrality[node] += float64(matrix[node][j].Int()) * centrality[j]
+					}
+				}
+			}(i)
+		}
+
+		wg.Wait()
+
+		// Normalize the new centrality scores
+		norm := 0.0
+		for _, value := range newCentrality {
+			norm += value * value
+		}
+		norm = math.Sqrt(norm)
+
+		for i := 0; i < n; i++ {
+			newCentrality[i] /= norm
+		}
+
+		// Check for convergence
+		diff := 0.0
+		for i := 0; i < n; i++ {
+			diff += math.Abs(newCentrality[i] - centrality[i])
+		}
+
+		if diff < tol {
+			break
+		}
+
+		centrality = newCentrality
+	}
+
+	// Convert to map for output
+	result := make(map[graph.Identifier]float64)
+	for i := 0; i < n; i++ {
+		result[graph.Identifier(i)] = centrality[i]
+	}
+
+	return result
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/elecbug/go-graphtric/graph"
 )
 
-func TestCentrality(t *testing.T) {
+func TestEfficiency(t *testing.T) {
 	cap := 30
 	g := graph.NewGraph(graph.UndirectedUnweighted, cap)
 
@@ -33,13 +33,12 @@ func TestCentrality(t *testing.T) {
 	}
 
 	pu := algorithm.NewParallelUnit(40)
-	t.Logf("betweenness cen: %v\n", pu.BetweennessCentrality(g))
-	t.Logf("degree cen: %v\n", pu.DegreeCentrality(g))
-	t.Logf("eigenvector cen: %v\n", pu.EigenvectorCentrality(g, 100, 1e-6))
+
+	t.Logf("local eff: %v\n", pu.LocalEfficiency(g))
+	t.Logf("global eff: %v\n", pu.GlobalEfficiency(g))
 
 	u := algorithm.NewUnit()
-	t.Logf("betweenness cen: %v\n", u.BetweennessCentrality(g))
-	t.Logf("degree cen: %v\n", u.DegreeCentrality(g))
-	t.Logf("degree cen: %v\n", u.DegreeCentrality(g))
-	t.Logf("eigenvector cen: %v\n", u.EigenvectorCentrality(g, 100, 1e-6))
+
+	t.Logf("local eff: %v\n", u.LocalEfficiency(g))
+	t.Logf("global eff: %v\n", u.GlobalEfficiency(g))
 }
