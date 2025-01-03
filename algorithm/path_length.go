@@ -1,8 +1,6 @@
 package algorithm
 
 import (
-	"sort"
-
 	"github.com/elecbug/go-graphtric/graph"
 )
 
@@ -51,28 +49,15 @@ func (u *Unit) PercentileShortestPathLength(g *graph.Graph, percentile float64) 
 		u.computePaths(g)
 	}
 
-	distances := []graph.Distance{}
+	index := int(percentile * float64(len(u.shortestPaths)))
 
-	for _, path := range u.shortestPaths {
-		distances = append(distances, path.Distance())
-	}
-
-	if len(distances) == 0 {
-		return 0
-	}
-
-	sort.Slice(distances, func(i, j int) bool {
-		return distances[i] < distances[j]
-	})
-
-	index := int(percentile * float64(len(distances)))
-	if index >= len(distances) {
-		index = len(distances) - 1
+	if index >= len(u.shortestPaths) {
+		index = len(u.shortestPaths) - 1
 	} else if index < 0 {
 		index = 0
 	}
 
-	return distances[index]
+	return u.shortestPaths[index].Distance()
 }
 
 func (pu *ParallelUnit) PercentileShortestPathLength(g *graph.Graph, percentile float64) graph.Distance {
@@ -80,27 +65,13 @@ func (pu *ParallelUnit) PercentileShortestPathLength(g *graph.Graph, percentile 
 		pu.computePaths(g)
 	}
 
-	distances := []graph.Distance{}
+	index := int(percentile * float64(len(pu.shortestPaths)))
 
-	for _, path := range pu.shortestPaths {
-		distances = append(distances, path.Distance())
-	}
-
-	if len(distances) == 0 {
-		return 0
-	}
-
-	sort.Slice(distances, func(i, j int) bool {
-		return distances[i] < distances[j]
-	})
-
-	index := int(percentile * float64(len(distances)))
-
-	if index >= len(distances) {
-		index = len(distances) - 1
+	if index >= len(pu.shortestPaths) {
+		index = len(pu.shortestPaths) - 1
 	} else if index < 0 {
 		index = 0
 	}
 
-	return distances[index]
+	return pu.shortestPaths[index].Distance()
 }

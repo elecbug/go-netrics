@@ -20,7 +20,7 @@ func TestAverageShortestPathLength(t *testing.T) {
 
 	// t.Logf("%s\n", spew.Sdump(g))
 
-	for i := 0; i < g.Size()*g.Size()/10; i++ {
+	for i := 0; i < g.Size()*g.Size()/100; i++ {
 		r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(i)))
 		from := graph.Identifier(r.Intn(g.Size()))
 
@@ -41,6 +41,9 @@ func TestAverageShortestPathLength(t *testing.T) {
 	u := algorithm.NewUnit()
 	dia = u.Diameter(g)
 	aspl = u.AverageShortestPathLength(g)
-	pspl = u.PercentileShortestPathLength(g, 0.5)
-	t.Logf("diameter: %d, ASPL: %f, PSPL: %d\n", dia.Distance(), aspl, pspl)
+	t.Logf("diameter: %d, ASPL: %f\n", dia.Distance(), aspl)
+
+	for i := 0.0; i < 1; i += 0.1 {
+		t.Logf("%f: %d", i, u.PercentileShortestPathLength(g, i))
+	}
 }

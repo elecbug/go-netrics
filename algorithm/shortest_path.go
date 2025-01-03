@@ -2,6 +2,7 @@ package algorithm
 
 import (
 	"math"
+	"sort"
 	"sync"
 
 	"github.com/elecbug/go-graphtric/graph"
@@ -34,6 +35,10 @@ func (u *Unit) computePaths(g *graph.Graph) {
 			}
 		}
 	}
+
+	sort.Slice(u.shortestPaths, func(i, j int) bool {
+		return u.shortestPaths[i].Distance() < u.shortestPaths[j].Distance()
+	})
 
 	g.Update()
 	u.updated = true
@@ -88,6 +93,10 @@ func (pu *ParallelUnit) computePaths(g *graph.Graph) {
 	for result := range resultChan {
 		pu.shortestPaths = append(pu.shortestPaths, result)
 	}
+
+	sort.Slice(pu.shortestPaths, func(i, j int) bool {
+		return pu.shortestPaths[i].Distance() < pu.shortestPaths[j].Distance()
+	})
 
 	g.Update()
 	pu.updated = true

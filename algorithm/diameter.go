@@ -9,17 +9,7 @@ func (u *Unit) Diameter(g *graph.Graph) graph.Path {
 		u.computePaths(g)
 	}
 
-	var maxPath graph.Path
-	var maxDistance graph.Distance = 0
-
-	for _, path := range u.shortestPaths {
-		if path.Distance() > maxDistance {
-			maxDistance = path.Distance()
-			maxPath = path
-		}
-	}
-
-	return maxPath
+	return u.shortestPaths[len(u.shortestPaths)-1]
 }
 
 func (pu *ParallelUnit) Diameter(g *graph.Graph) graph.Path {
@@ -27,15 +17,5 @@ func (pu *ParallelUnit) Diameter(g *graph.Graph) graph.Path {
 		pu.computePaths(g)
 	}
 
-	var maxPath graph.Path
-	var maxDistance graph.Distance = 0
-
-	for _, path := range pu.shortestPaths {
-		if path.Distance() > maxDistance {
-			maxDistance = path.Distance()
-			maxPath = path
-		}
-	}
-
-	return maxPath
+	return pu.shortestPaths[len(pu.shortestPaths)-1]
 }
