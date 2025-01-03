@@ -10,8 +10,8 @@ import (
 	"github.com/elecbug/go-graphtric/graph"
 )
 
-func TestAverageShortestPathLength(t *testing.T) {
-	cap := 200
+func TestCoefficient(t *testing.T) {
+	cap := 30
 	g := graph.NewGraph(graph.UndirectedUnweighted, cap)
 
 	for i := 0; i < cap; i++ {
@@ -20,7 +20,7 @@ func TestAverageShortestPathLength(t *testing.T) {
 
 	// t.Logf("%s\n", spew.Sdump(g))
 
-	for i := 0; i < g.NodeCount()*g.NodeCount()/100; i++ {
+	for i := 0; i < g.NodeCount()*g.NodeCount()/10; i++ {
 		r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(i)))
 		from := graph.Identifier(r.Intn(g.NodeCount()))
 
@@ -33,17 +33,14 @@ func TestAverageShortestPathLength(t *testing.T) {
 	}
 
 	pu := algorithm.NewParallelUnit(40)
-	dia := pu.Diameter(g)
-	aspl := pu.AverageShortestPathLength(g)
-	pspl := pu.PercentileShortestPathLength(g, 0.5)
-	t.Logf("diameter: %d, ASPL: %f, PSPL: %d\n", dia.Distance(), aspl, pspl)
+
+	glo, loc := pu.ClusteringCoefficient(g)
+	t.Logf("clustering coef: %v, %f\n", glo, loc)
+	t.Logf("rich club coef: %v\n", pu.RichClubCoefficient(g, 5))
 
 	u := algorithm.NewUnit()
-	dia = u.Diameter(g)
-	aspl = u.AverageShortestPathLength(g)
-	t.Logf("diameter: %d, ASPL: %f\n", dia.Distance(), aspl)
 
-	for i := 0.0; i < 1; i += 0.1 {
-		t.Logf("%f: %d", i, u.PercentileShortestPathLength(g, i))
-	}
+	glo, loc = u.ClusteringCoefficient(g)
+	t.Logf("clustering coef: %v, %f\n", glo, loc)
+	t.Logf("rich club coef: %v\n", u.RichClubCoefficient(g, 5))
 }

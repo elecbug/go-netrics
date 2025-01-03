@@ -10,8 +10,8 @@ import (
 	"github.com/elecbug/go-graphtric/graph"
 )
 
-func TestAverageShortestPathLength(t *testing.T) {
-	cap := 200
+func TestEfficiency(t *testing.T) {
+	cap := 30
 	g := graph.NewGraph(graph.UndirectedUnweighted, cap)
 
 	for i := 0; i < cap; i++ {
@@ -20,7 +20,7 @@ func TestAverageShortestPathLength(t *testing.T) {
 
 	// t.Logf("%s\n", spew.Sdump(g))
 
-	for i := 0; i < g.NodeCount()*g.NodeCount()/100; i++ {
+	for i := 0; i < g.NodeCount()*g.NodeCount()/10; i++ {
 		r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(i)))
 		from := graph.Identifier(r.Intn(g.NodeCount()))
 
@@ -33,17 +33,12 @@ func TestAverageShortestPathLength(t *testing.T) {
 	}
 
 	pu := algorithm.NewParallelUnit(40)
-	dia := pu.Diameter(g)
-	aspl := pu.AverageShortestPathLength(g)
-	pspl := pu.PercentileShortestPathLength(g, 0.5)
-	t.Logf("diameter: %d, ASPL: %f, PSPL: %d\n", dia.Distance(), aspl, pspl)
+
+	t.Logf("local eff: %v\n", pu.LocalEfficiency(g))
+	t.Logf("global eff: %v\n", pu.GlobalEfficiency(g))
 
 	u := algorithm.NewUnit()
-	dia = u.Diameter(g)
-	aspl = u.AverageShortestPathLength(g)
-	t.Logf("diameter: %d, ASPL: %f\n", dia.Distance(), aspl)
 
-	for i := 0.0; i < 1; i += 0.1 {
-		t.Logf("%f: %d", i, u.PercentileShortestPathLength(g, i))
-	}
+	t.Logf("local eff: %v\n", u.LocalEfficiency(g))
+	t.Logf("global eff: %v\n", u.GlobalEfficiency(g))
 }
