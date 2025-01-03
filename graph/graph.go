@@ -11,6 +11,7 @@ type Graph struct {
 	nodes     *graphNodes
 	nowID     Identifier
 	graphType GraphType
+	updated   bool
 }
 
 func NewGraph(graphType GraphType, capacity int) *Graph {
@@ -18,6 +19,7 @@ func NewGraph(graphType GraphType, capacity int) *Graph {
 		nodes:     newNodes(capacity),
 		nowID:     0,
 		graphType: graphType,
+		updated:   false,
 	}
 }
 
@@ -30,11 +32,13 @@ func (g *Graph) AddNode(name string) (*Node, error) {
 	}
 
 	g.nowID++
+	g.updated = false
 
 	return node, nil
 }
 
 func (g *Graph) RemoveNode(identifier Identifier) error {
+	g.updated = false
 	return g.nodes.remove(identifier)
 }
 
@@ -90,6 +94,8 @@ func (g *Graph) AddWeightEdge(from, to Identifier, distance Distance) error {
 		g.nodes.find(to).addEdge(from, distance)
 	}
 
+	g.updated = false
+
 	return nil
 }
 
@@ -119,4 +125,12 @@ func (g Graph) Size() int {
 
 func (g Graph) Type() GraphType {
 	return g.graphType
+}
+
+func (g Graph) Updated() bool {
+	return g.updated
+}
+
+func (g *Graph) Update() {
+	g.updated = true
 }
