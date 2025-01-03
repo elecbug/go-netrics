@@ -10,7 +10,7 @@ import (
 	"github.com/elecbug/go-graphtric/graph"
 )
 
-func TestBetweennessCentrality(t *testing.T) {
+func TestCentrality(t *testing.T) {
 	cap := 200
 	g := graph.NewGraph(graph.UndirectedUnweighted, cap)
 
@@ -20,12 +20,12 @@ func TestBetweennessCentrality(t *testing.T) {
 
 	// t.Logf("%s\n", spew.Sdump(g))
 
-	for i := 0; i < g.Size()*g.Size()/10; i++ {
+	for i := 0; i < g.NodeCount()*g.NodeCount()/10; i++ {
 		r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(i)))
-		from := graph.Identifier(r.Intn(g.Size()))
+		from := graph.Identifier(r.Intn(g.NodeCount()))
 
 		r = rand.New(rand.NewSource(time.Now().UnixNano() + int64(i*i)))
-		to := graph.Identifier(r.Intn(g.Size()))
+		to := graph.Identifier(r.Intn(g.NodeCount()))
 
 		// t.Logf("%d - %d", from, to)
 
@@ -33,10 +33,10 @@ func TestBetweennessCentrality(t *testing.T) {
 	}
 
 	pu := algorithm.NewParallelUnit(40)
-	result := pu.BetweennessCentrality(g)
-	t.Logf("betweenness cen: %v\n", result)
+	t.Logf("betweenness cen: %v\n", pu.BetweennessCentrality(g))
+	t.Logf("degree cen: %v\n", pu.DegreeCentrality(g))
 
 	u := algorithm.NewUnit()
-	result = u.BetweennessCentrality(g)
-	t.Logf("betweenness cen: %v\n", result)
+	t.Logf("betweenness cen: %v\n", u.BetweennessCentrality(g))
+	t.Logf("degree cen: %v\n", u.DegreeCentrality(g))
 }

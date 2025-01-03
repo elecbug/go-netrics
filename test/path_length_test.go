@@ -20,12 +20,12 @@ func TestAverageShortestPathLength(t *testing.T) {
 
 	// t.Logf("%s\n", spew.Sdump(g))
 
-	for i := 0; i < g.Size()*g.Size()/100; i++ {
+	for i := 0; i < g.NodeCount()*g.NodeCount()/100; i++ {
 		r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(i)))
-		from := graph.Identifier(r.Intn(g.Size()))
+		from := graph.Identifier(r.Intn(g.NodeCount()))
 
 		r = rand.New(rand.NewSource(time.Now().UnixNano() + int64(i*i)))
-		to := graph.Identifier(r.Intn(g.Size()))
+		to := graph.Identifier(r.Intn(g.NodeCount()))
 
 		// t.Logf("%d - %d", from, to)
 

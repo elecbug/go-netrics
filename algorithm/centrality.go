@@ -22,7 +22,7 @@ func (u *Unit) BetweennessCentrality(g *graph.Graph) map[graph.Identifier]float6
 	centrality := make(map[graph.Identifier]float64)
 
 	// Initialize centrality scores for all nodes to 0.
-	for i := 0; i < g.Size(); i++ {
+	for i := 0; i < g.NodeCount(); i++ {
 		centrality[graph.Identifier(i)] = 0
 	}
 
@@ -39,7 +39,7 @@ func (u *Unit) BetweennessCentrality(g *graph.Graph) map[graph.Identifier]float6
 	}
 
 	// Normalize the centrality scores.
-	n := g.Size()
+	n := g.NodeCount()
 	if n > 2 {
 		for node := range centrality {
 			centrality[node] /= float64((n - 1) * (n - 2))
@@ -65,7 +65,7 @@ func (pu *ParallelUnit) BetweennessCentrality(g *graph.Graph) map[graph.Identifi
 	centrality := make(map[graph.Identifier]float64)
 
 	// Initialize centrality scores for all nodes to 0.
-	for i := 0; i < g.Size(); i++ {
+	for i := 0; i < g.NodeCount(); i++ {
 		centrality[graph.Identifier(i)] = 0
 	}
 
@@ -75,7 +75,7 @@ func (pu *ParallelUnit) BetweennessCentrality(g *graph.Graph) map[graph.Identifi
 		count float64
 	}
 
-	resultChan := make(chan result, g.Size())
+	resultChan := make(chan result, g.NodeCount())
 	var wg sync.WaitGroup
 
 	// Compute centrality scores in parallel.
@@ -107,10 +107,118 @@ func (pu *ParallelUnit) BetweennessCentrality(g *graph.Graph) map[graph.Identifi
 	}
 
 	// Normalize the centrality scores.
-	n := g.Size()
+	n := g.NodeCount()
 	if n > 2 {
 		for node := range centrality {
 			centrality[node] /= float64((n - 1) * (n - 2))
+		}
+	}
+
+	return centrality
+}
+
+// DegreeCentrality computes the degree centrality of each node in the graph for a Unit.
+// Degree centrality is the number of direct connections a node has to other nodes.
+// Parameters:
+//   - g: The graph to compute the degree centrality for.
+//
+// Returns:
+//   - A map where the keys are node identifiers and the values are the degree centrality scores.
+func (u *Unit) DegreeCentrality(g *graph.Graph) map[graph.Identifier]float64 {
+	if !g.Updated() || !u.updated {
+		// Recompute shortest paths if the graph or unit has been updated.
+		u.computePaths(g)
+	}
+
+	centrality := make(map[graph.Identifier]float64)
+
+	// Initialize centrality scores for all nodes to 0.
+	for i := 0; i < g.NodeCount(); i++ {
+		centrality[graph.Identifier(i)] = 0
+	}
+
+	// Calculate the degree for each node by counting direct neighbors.
+	matrix := g.ToMatrix()
+	for i, row := range matrix {
+		for _, value := range row {
+			if value != graph.INF {
+				centrality[graph.Identifier(i)]++
+			}
+		}
+	}
+
+	// Normalize centrality scores by the maximum possible degree (n-1).
+	n := g.NodeCount()
+	if n > 1 {
+		for node := range centrality {
+			centrality[node] /= float64(n - 1)
+		}
+	}
+
+	return centrality
+}
+
+// DegreeCentrality computes the degree centrality of each node in the graph for a ParallelUnit.
+// The computation is performed in parallel for better performance on larger graphs.
+// Parameters:
+//   - g: The graph to compute the degree centrality for.
+//
+// Returns:
+//   - A map where the keys are node identifiers and the values are the degree centrality scores.
+func (pu *ParallelUnit) DegreeCentrality(g *graph.Graph) map[graph.Identifier]float64 {
+	if !g.Updated() || !pu.updated {
+		// Recompute shortest paths if the graph or unit has been updated.
+		pu.computePaths(g)
+	}
+
+	centrality := make(map[graph.Identifier]float64)
+
+	// Initialize centrality scores for all nodes to 0.
+	for i := 0; i < g.NodeCount(); i++ {
+		centrality[graph.Identifier(i)] = 0
+	}
+
+	matrix := g.ToMatrix()
+	var wg sync.WaitGroup
+	resultChan := make(chan struct {
+		node  graph.Identifier
+		count float64
+	}, g.NodeCount())
+
+	// Compute degree centrality in parallel.
+	for i := 0; i < len(matrix); i++ {
+		wg.Add(1)
+		go func(nodeIndex int) {
+			defer wg.Done()
+			count := 0.0
+			for _, value := range matrix[nodeIndex] {
+				if value != graph.INF {
+					count++
+				}
+			}
+			resultChan <- struct {
+				node  graph.Identifier
+				count float64
+			}{node: graph.Identifier(nodeIndex), count: count}
+		}(i)
+	}
+
+	// Close the result channel after all goroutines complete.
+	go func() {
+		wg.Wait()
+		close(resultChan)
+	}()
+
+	// Aggregate results from the result channel.
+	for res := range resultChan {
+		centrality[res.node] = res.count
+	}
+
+	// Normalize centrality scores by the maximum possible degree (n-1).
+	n := g.NodeCount()
+	if n > 1 {
+		for node := range centrality {
+			centrality[node] /= float64(n - 1)
 		}
 	}
 

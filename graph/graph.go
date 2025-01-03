@@ -15,6 +15,7 @@ type Graph struct {
 	nowID     Identifier  // The next unique identifier to be assigned to a new node.
 	graphType GraphType   // The type of the graph (e.g., directed, undirected, weighted, unweighted).
 	updated   bool        // Tracks if the graph has been modified since the last update.
+	edgeCount int         // Number of edges in graph.
 }
 
 // NewGraph creates and initializes a new Graph instance.
@@ -29,6 +30,7 @@ func NewGraph(graphType GraphType, capacity int) *Graph {
 		nowID:     0,
 		graphType: graphType,
 		updated:   false,
+		edgeCount: 0,
 	}
 }
 
@@ -143,6 +145,7 @@ func (g *Graph) AddWeightEdge(from, to Identifier, distance Distance) error {
 	}
 
 	g.updated = false // Mark the graph as modified.
+	g.edgeCount++     // Update edge count
 
 	return nil
 }
@@ -171,9 +174,14 @@ func (g *Graph) ToMatrix() Matrix {
 	return matrix
 }
 
-// Size returns the number of nodes in the graph.
-func (g Graph) Size() int {
+// NodeCount returns the number of nodes in the graph.
+func (g Graph) NodeCount() int {
 	return len(g.nodes.nodes)
+}
+
+// EdgeCount returns the number of edges in the graph.
+func (g Graph) EdgeCount() int {
+	return g.edgeCount
 }
 
 // Type returns the type of the graph (e.g., directed/undirected, weighted/unweighted).
@@ -190,4 +198,19 @@ func (g Graph) Updated() bool {
 // This should be called after performing an algorithmic computation.
 func (g *Graph) Update() {
 	g.updated = true
+}
+
+// NodeIDs returns a slice of all node identifiers in the graph.
+// This function collects and returns the unique identifiers of all nodes stored in the graph.
+// Returns:
+//   - A slice of `Identifier` representing the IDs of all nodes in the graph.
+func (g Graph) NodeIDs() []Identifier {
+	ids := []Identifier{}
+
+	// Iterate over the graph's nodes and collect their identifiers.
+	for id := range g.nodes.nodes {
+		ids = append(ids, id)
+	}
+
+	return ids
 }
