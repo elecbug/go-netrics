@@ -8,6 +8,7 @@ type Edge struct {
 }
 
 // newEdge creates a new Edge instance.
+//
 // Parameters:
 //   - to: The destination node's identifier.
 //   - distance: The weight of the edge.

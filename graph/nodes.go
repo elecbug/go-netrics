@@ -14,6 +14,7 @@ type graphNodes struct {
 }
 
 // newNodes creates and initializes a new graphNodes instance.
+//
 // Parameters:
 //   - cap: Initial capacity for the internal maps.
 //
@@ -26,6 +27,7 @@ func newNodes(cap int) *graphNodes {
 }
 
 // insert adds a new Node to the graphNodes collection.
+//
 // Parameters:
 //   - node: The Node to be inserted.
 //
@@ -51,6 +53,7 @@ func (ns *graphNodes) insert(node *Node) error {
 }
 
 // remove deletes a Node from the graphNodes collection using its identifier.
+//
 // Parameters:
 //   - identifier: The unique identifier of the Node to remove.
 //
@@ -79,6 +82,7 @@ func (ns *graphNodes) remove(identifier Identifier) error {
 }
 
 // find retrieves a Node by its identifier.
+//
 // Parameters:
 //   - identifier: The unique identifier of the Node.
 //
@@ -88,6 +92,7 @@ func (ns *graphNodes) find(identifier Identifier) *Node {
 }
 
 // findAll retrieves all Nodes with a given name.
+//
 // Parameters:
 //   - name: The name of the Nodes to find.
 //

@@ -9,6 +9,7 @@ import (
 
 // BetweennessCentrality computes the betweenness centrality of each node in the graph for a Unit.
 // Betweenness centrality measures how often a node appears on the shortest paths between pairs of other nodes.
+//
 // Parameters:
 //   - g: The graph to compute the betweenness centrality for.
 //
@@ -52,6 +53,7 @@ func (u *Unit) BetweennessCentrality(g *graph.Graph) map[graph.Identifier]float6
 
 // BetweennessCentrality computes the betweenness centrality of each node in the graph for a ParallelUnit.
 // The computation is performed in parallel for better performance on larger graphs.
+//
 // Parameters:
 //   - g: The graph to compute the betweenness centrality for.
 //
@@ -120,6 +122,7 @@ func (pu *ParallelUnit) BetweennessCentrality(g *graph.Graph) map[graph.Identifi
 
 // DegreeCentrality computes the degree centrality of each node in the graph for a Unit.
 // Degree centrality is the number of direct connections a node has to other nodes.
+//
 // Parameters:
 //   - g: The graph to compute the degree centrality for.
 //
@@ -156,6 +159,7 @@ func (u *Unit) DegreeCentrality(g *graph.Graph) map[graph.Identifier]float64 {
 
 // DegreeCentrality computes the degree centrality of each node in the graph for a ParallelUnit.
 // The computation is performed in parallel for better performance on larger graphs.
+//
 // Parameters:
 //   - g: The graph to compute the degree centrality for.
 //
@@ -219,6 +223,7 @@ func (pu *ParallelUnit) DegreeCentrality(g *graph.Graph) map[graph.Identifier]fl
 
 // EigenvectorCentrality computes the eigenvector centrality of each node in the graph for a Unit.
 // Eigenvector centrality assigns scores to nodes based on the importance of their neighbors.
+//
 // Parameters:
 //   - g: The graph to compute the eigenvector centrality for.
 //
@@ -281,6 +286,7 @@ func (u *Unit) EigenvectorCentrality(g *graph.Graph, maxIter int, tol float64) m
 
 // EigenvectorCentrality computes the eigenvector centrality of each node in the graph for a ParallelUnit.
 // The computation is performed in parallel for better performance on larger graphs.
+//
 // Parameters:
 //   - g: The graph to compute the eigenvector centrality for.
 //

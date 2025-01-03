@@ -6,6 +6,7 @@ import (
 
 // Unit represents a computation unit for graph algorithms.
 // It is used to store and compute shortest paths within a graph.
+//
 // Fields:
 //   - shortestPaths: A slice of all shortest paths in the graph, sorted by their distance in ascending order.
 //   - updated: A boolean indicating whether the paths are up-to-date or if the graph has been modified.
@@ -16,6 +17,7 @@ type Unit struct {
 
 // ParallelUnit is an extension of Unit for parallel computation.
 // It supports running graph algorithms using multiple cores.
+//
 // Fields:
 //   - Unit: Embeds the base Unit structure for algorithm computations.
 //   - maxCore: The maximum number of cores to be used for parallel processing.
@@ -34,6 +36,7 @@ func NewUnit() *Unit {
 }
 
 // NewParallelUnit creates and initializes a new ParallelUnit instance.
+//
 // Parameters:
 //   - core: The maximum number of cores to use for parallel computations.
 //

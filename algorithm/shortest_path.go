@@ -8,6 +8,7 @@ import (
 )
 
 // ShortestPath computes the shortest path between two nodes in a graph.
+//
 // Parameters:
 //   - g: The graph to perform the computation on.
 //   - start: The starting node identifier.
@@ -28,6 +29,7 @@ func ShortestPath(g *graph.Graph, start, end graph.Identifier) *graph.Path {
 
 // computePaths calculates all shortest paths between every pair of nodes in the graph for a Unit.
 // After computation, the `shortestPaths` field in the Unit is updated and sorted by path distance in ascending order.
+//
 // Parameters:
 //   - g: The graph to perform the computation on.
 func (u *Unit) computePaths(g *graph.Graph) {
@@ -59,6 +61,7 @@ func (u *Unit) computePaths(g *graph.Graph) {
 
 // computePaths calculates all shortest paths in parallel for a ParallelUnit.
 // After computation, the `shortestPaths` field in the ParallelUnit is updated and sorted by path distance in ascending order.
+//
 // Parameters:
 //   - g: The graph to perform the computation on.
 func (pu *ParallelUnit) computePaths(g *graph.Graph) {
@@ -126,6 +129,7 @@ func (pu *ParallelUnit) computePaths(g *graph.Graph) {
 
 // weightedShortestPath computes the shortest path between two nodes in a weighted graph.
 // Uses Dijkstra's algorithm to calculate the path.
+//
 // Parameters:
 //   - matrix: The adjacency matrix representation of the graph.
 //   - start: The starting node identifier.
@@ -197,6 +201,7 @@ func weightedShortestPath(matrix graph.Matrix, start, end graph.Identifier) *gra
 
 // unweightedShortestPath computes the shortest path between two nodes in an unweighted graph.
 // Uses BFS to calculate the path.
+//
 // Parameters:
 //   - matrix: The adjacency matrix representation of the graph.
 //   - start: The starting node identifier.

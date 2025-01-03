@@ -11,6 +11,7 @@ type Node struct {
 }
 
 // newNode creates a new Node instance.
+//
 // Parameters:
 //   - identifier: The unique identifier for the node.
 //   - name: The display name for the node.
@@ -25,6 +26,7 @@ func newNode(identifier Identifier, name string) *Node {
 }
 
 // addEdge adds a new edge to the node's list of edges.
+//
 // Parameters:
 //   - to: The identifier of the destination node.
 //   - distance: The weight of the edge.

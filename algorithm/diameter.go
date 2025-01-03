@@ -6,6 +6,7 @@ import (
 
 // Diameter computes the diameter of the graph for a Unit.
 // The diameter is defined as the longest shortest path between any two nodes in the graph.
+//
 // Parameters:
 //   - g: The graph to compute the diameter for.
 //
@@ -25,6 +26,7 @@ func (u *Unit) Diameter(g *graph.Graph) graph.Path {
 }
 
 // Diameter computes the diameter of the graph for a ParallelUnit.
+//
 // Parameters:
 //   - g: The graph to compute the diameter for.
 //

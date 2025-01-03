@@ -5,6 +5,7 @@ import (
 )
 
 // AverageShortestPathLength computes the average shortest path length in the graph.
+//
 // Parameters:
 //   - g: The graph to compute the metric for.
 //
@@ -60,6 +61,7 @@ func (pu *ParallelUnit) AverageShortestPathLength(g *graph.Graph) float64 {
 }
 
 // PercentileShortestPathLength returns the shortest path length at the specified percentile.
+//
 // Parameters:
 //   - g: The graph to compute the metric for.
 //   - percentile: A float64 between 0 and 1 indicating the desired percentile.

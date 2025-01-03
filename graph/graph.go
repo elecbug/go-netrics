@@ -19,6 +19,7 @@ type Graph struct {
 }
 
 // NewGraph creates and initializes a new Graph instance.
+//
 // Parameters:
 //   - graphType: The type of the graph (from the GraphType enumeration).
 //   - capacity: The initial capacity for the node collection.
@@ -35,6 +36,7 @@ func NewGraph(graphType GraphType, capacity int) *Graph {
 }
 
 // AddNode adds a new node to the graph with the given name.
+//
 // Parameters:
 //   - name: The display name for the node.
 //
@@ -55,6 +57,7 @@ func (g *Graph) AddNode(name string) (*Node, error) {
 }
 
 // RemoveNode removes a node from the graph using its identifier.
+//
 // Parameters:
 //   - identifier: The unique identifier of the node to remove.
 //
@@ -65,6 +68,7 @@ func (g *Graph) RemoveNode(identifier Identifier) error {
 }
 
 // FindNode retrieves a node from the graph by its identifier.
+//
 // Parameters:
 //   - identifier: The unique identifier of the node.
 //
@@ -80,6 +84,7 @@ func (g *Graph) FindNode(identifier Identifier) (*Node, error) {
 }
 
 // FindNodesByName retrieves all nodes with the given name.
+//
 // Parameters:
 //   - name: The name of the nodes to find.
 //
@@ -95,6 +100,7 @@ func (g *Graph) FindNodesByName(name string) ([]*Node, error) {
 }
 
 // AddEdge adds an unweighted edge between two nodes in the graph.
+//
 // Parameters:
 //   - from: The identifier of the source node.
 //   - to: The identifier of the destination node.
@@ -105,6 +111,7 @@ func (g *Graph) AddEdge(from, to Identifier) error {
 }
 
 // AddWeightEdge adds a weighted edge between two nodes in the graph.
+//
 // Parameters:
 //   - from: The identifier of the source node.
 //   - to: The identifier of the destination node.
@@ -202,6 +209,7 @@ func (g *Graph) Update() {
 
 // NodeIDs returns a slice of all node identifiers in the graph.
 // This function collects and returns the unique identifiers of all nodes stored in the graph.
+//
 // Returns:
 //   - A slice of `Identifier` representing the IDs of all nodes in the graph.
 func (g Graph) NodeIDs() []Identifier {

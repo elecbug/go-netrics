@@ -9,6 +9,7 @@ type Path struct {
 }
 
 // NewPath creates and initializes a new Path instance.
+//
 // Parameters:
 //   - distance: The total weight or distance of the path.
 //   - nodes: A slice of node identifiers representing the sequence of nodes in the path.
