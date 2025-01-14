@@ -13,11 +13,13 @@ type Matrix [][]Distance
 // This method formats the matrix for easy readability:
 //   - Each row of the matrix is printed on a new line.
 //   - Values are separated by spaces, with "INF" used for unreachable nodes.
-func (m Matrix) String() string {
+func (g Graph) String() string {
 	result := ""
 
+	matrix := g.ToMatrix()
+
 	// Iterate over each row of the matrix.
-	for _, arr := range [][]Distance(m) {
+	for _, arr := range [][]Distance(matrix) {
 		// Iterate over each element in the row.
 		for _, a := range arr {
 			if a != INF {

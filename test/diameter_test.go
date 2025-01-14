@@ -36,21 +36,21 @@ func TestDiameter(t *testing.T) {
 	// t.Logf("\n%s\n", g.ToMatrix().String())
 
 	s := time.Now()
-	pm := algorithm.NewParallelUnit(40)
-	path := pm.Diameter(g)
+	pm := algorithm.NewParallelUnit(g, 40)
+	path := pm.Diameter()
 	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
 	duration := time.Since(s)
 	t.Logf("Execution time: %s", duration)
 
 	s = time.Now()
-	um := algorithm.NewUnit()
-	path = um.Diameter(g)
+	um := algorithm.NewUnit(g)
+	path = um.Diameter()
 	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
 	duration = time.Since(s)
 	t.Logf("Execution time: %s", duration)
 
 	s = time.Now()
-	path = pm.Diameter(g)
+	path = pm.Diameter()
 	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
 	duration = time.Since(s)
 	t.Logf("Execution time: %s", duration)
@@ -68,7 +68,7 @@ func TestDiameter(t *testing.T) {
 	}
 
 	s = time.Now()
-	path = pm.Diameter(g)
+	path = pm.Diameter()
 	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
 	duration = time.Since(s)
 	t.Logf("Execution time: %s", duration)

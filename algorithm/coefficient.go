@@ -10,13 +10,11 @@ import (
 // Local clustering coefficient measures the degree to which nodes in a graph cluster together.
 // Global clustering coefficient is the average of local coefficients across all nodes.
 //
-// Parameters:
-//   - g: The graph for which clustering coefficients are computed.
-//
 // Returns:
 //   - A map where the keys are node identifiers and the values are the local clustering coefficients.
 //   - The global clustering coefficient as a float64.
-func (u *Unit) ClusteringCoefficient(g *graph.Graph) (map[graph.Identifier]float64, float64) {
+func (u *Unit) ClusteringCoefficient() (map[graph.Identifier]float64, float64) {
+	g := u.graph
 	matrix := g.ToMatrix() // Get adjacency matrix representation of the graph.
 	n := len(matrix)       // Number of nodes in the graph.
 
@@ -67,13 +65,11 @@ func (u *Unit) ClusteringCoefficient(g *graph.Graph) (map[graph.Identifier]float
 // ClusteringCoefficient computes the local and global clustering coefficients for a graph using a ParallelUnit.
 // The computation is performed in parallel for better performance on larger graphs.
 //
-// Parameters:
-//   - g: The graph for which clustering coefficients are computed.
-//
 // Returns:
 //   - A map where the keys are node identifiers and the values are the local clustering coefficients.
 //   - The global clustering coefficient as a float64.
-func (pu *ParallelUnit) ClusteringCoefficient(g *graph.Graph) (map[graph.Identifier]float64, float64) {
+func (pu *ParallelUnit) ClusteringCoefficient() (map[graph.Identifier]float64, float64) {
+	g := pu.graph
 	matrix := g.ToMatrix() // Get adjacency matrix representation of the graph.
 	n := len(matrix)       // Number of nodes in the graph.
 
@@ -150,12 +146,12 @@ func (pu *ParallelUnit) ClusteringCoefficient(g *graph.Graph) (map[graph.Identif
 // This coefficient measures how well nodes with degree >= k are connected to each other.
 //
 // Parameters:
-//   - g: The graph for which the rich club coefficient is computed.
 //   - k: The degree threshold.
 //
 // Returns:
 //   - The rich club coefficient as a float64.
-func (u *Unit) RichClubCoefficient(g *graph.Graph, k int) float64 {
+func (u *Unit) RichClubCoefficient(k int) float64 {
+	g := u.graph
 	matrix := g.ToMatrix() // Get adjacency matrix representation of the graph.
 	n := len(matrix)       // Number of nodes in the graph.
 
@@ -197,12 +193,12 @@ func (u *Unit) RichClubCoefficient(g *graph.Graph, k int) float64 {
 // The computation is performed in parallel for better performance.
 //
 // Parameters:
-//   - g: The graph for which the rich club coefficient is computed.
 //   - k: The degree threshold.
 //
 // Returns:
 //   - The rich club coefficient as a float64.
-func (pu *ParallelUnit) RichClubCoefficient(g *graph.Graph, k int) float64 {
+func (pu *ParallelUnit) RichClubCoefficient(k int) float64 {
+	g := pu.graph
 	matrix := g.ToMatrix() // Get adjacency matrix representation of the graph.
 	n := len(matrix)       // Number of nodes in the graph.
 

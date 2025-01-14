@@ -9,15 +9,14 @@ import (
 // GlobalEfficiency computes the global efficiency of a graph using a Unit.
 // Global efficiency is the average inverse shortest path length for all node pairs.
 //
-// Parameters:
-//   - g: The graph to compute the global efficiency for.
-//
 // Returns:
 //   - The global efficiency as a float64.
-func (u *Unit) GlobalEfficiency(g *graph.Graph) float64 {
+func (u *Unit) GlobalEfficiency() float64 {
+	g := u.graph
+
 	if !g.Updated() || !u.updated {
 		// Recompute shortest paths if the graph or unit has been updated.
-		u.computePaths(g)
+		u.computePaths()
 	}
 
 	var totalEfficiency float64
@@ -41,15 +40,14 @@ func (u *Unit) GlobalEfficiency(g *graph.Graph) float64 {
 // GlobalEfficiency computes the global efficiency of a graph using a ParallelUnit.
 // The computation is performed in parallel for better performance.
 //
-// Parameters:
-//   - g: The graph to compute the global efficiency for.
-//
 // Returns:
 //   - The global efficiency as a float64.
-func (pu *ParallelUnit) GlobalEfficiency(g *graph.Graph) float64 {
+func (pu *ParallelUnit) GlobalEfficiency() float64 {
+	g := pu.graph
+
 	if !g.Updated() || !pu.updated {
 		// Recompute shortest paths if the graph or unit has been updated.
-		pu.computePaths(g)
+		pu.computePaths()
 	}
 
 	var totalEfficiency float64
@@ -73,15 +71,14 @@ func (pu *ParallelUnit) GlobalEfficiency(g *graph.Graph) float64 {
 // LocalEfficiency computes the local efficiency of each node in the graph using a Unit.
 // Local efficiency measures how well the neighbors of a node are connected.
 //
-// Parameters:
-//   - g: The graph to compute the local efficiency for.
-//
 // Returns:
 //   - A map where the keys are node identifiers and the values are the local efficiency scores.
-func (u *Unit) LocalEfficiency(g *graph.Graph) map[graph.Identifier]float64 {
+func (u *Unit) LocalEfficiency() map[graph.Identifier]float64 {
+	g := u.graph
+
 	if !g.Updated() || !u.updated {
 		// Recompute shortest paths if the graph or unit has been updated.
-		u.computePaths(g)
+		u.computePaths()
 	}
 
 	localEfficiency := make(map[graph.Identifier]float64)
@@ -142,15 +139,14 @@ func (u *Unit) LocalEfficiency(g *graph.Graph) map[graph.Identifier]float64 {
 // LocalEfficiency computes the local efficiency of each node in the graph using a ParallelUnit.
 // The computation is performed in parallel for better performance.
 //
-// Parameters:
-//   - g: The graph to compute the local efficiency for.
-//
 // Returns:
 //   - A map where the keys are node identifiers and the values are the local efficiency scores.
-func (pu *ParallelUnit) LocalEfficiency(g *graph.Graph) map[graph.Identifier]float64 {
+func (pu *ParallelUnit) LocalEfficiency() map[graph.Identifier]float64 {
+	g := pu.graph
+
 	if !g.Updated() || !pu.updated {
 		// Recompute shortest paths if the graph or unit has been updated.
-		pu.computePaths(g)
+		pu.computePaths()
 	}
 
 	localEfficiency := make(map[graph.Identifier]float64)

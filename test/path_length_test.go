@@ -32,18 +32,18 @@ func TestAverageShortestPathLength(t *testing.T) {
 		g.AddEdge(from, to)
 	}
 
-	pu := algorithm.NewParallelUnit(40)
-	dia := pu.Diameter(g)
-	aspl := pu.AverageShortestPathLength(g)
-	pspl := pu.PercentileShortestPathLength(g, 0.5)
+	pu := algorithm.NewParallelUnit(g, 40)
+	dia := pu.Diameter()
+	aspl := pu.AverageShortestPathLength()
+	pspl := pu.PercentileShortestPathLength(0.5)
 	t.Logf("diameter: %d, ASPL: %f, PSPL: %d\n", dia.Distance(), aspl, pspl)
 
-	u := algorithm.NewUnit()
-	dia = u.Diameter(g)
-	aspl = u.AverageShortestPathLength(g)
+	u := algorithm.NewUnit(g)
+	dia = u.Diameter()
+	aspl = u.AverageShortestPathLength()
 	t.Logf("diameter: %d, ASPL: %f\n", dia.Distance(), aspl)
 
 	for i := 0.0; i < 1; i += 0.1 {
-		t.Logf("%f: %d", i, u.PercentileShortestPathLength(g, i))
+		t.Logf("%f: %d", i, u.PercentileShortestPathLength(i))
 	}
 }
