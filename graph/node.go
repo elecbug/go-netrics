@@ -1,5 +1,9 @@
 package graph
 
+import (
+	err "github.com/elecbug/go-netrics/err" // Custom error package
+)
+
 // Node represents a node in the graph.
 // It contains a unique identifier (`identifier`), a display name (`Name`),
 // the edges connected to the node (`edges`), and a flag (`alive`) indicating whether the node is active.
@@ -14,6 +18,7 @@ type Node struct {
 // Parameters:
 //   - identifier: The unique identifier for the node.
 //   - name: The display name for the node.
+//
 // Returns a pointer to the newly created Node.
 func newNode(identifier Identifier, name string) *Node {
 	return &Node{
@@ -28,8 +33,42 @@ func newNode(identifier Identifier, name string) *Node {
 // Parameters:
 //   - to: The identifier of the destination node.
 //   - distance: The weight of the edge.
-func (n *Node) addEdge(to Identifier, distance Distance) {
+func (n *Node) addEdge(to Identifier, distance Distance) error {
+	// Prevent duplicate edges.
+	for _, e := range n.edges {
+		if e.To() == to {
+			return err.AlreadyEdge(n.identifier.String(), to.String())
+		}
+	}
+
 	n.edges = append(n.edges, newEdge(to, distance))
+
+	return nil
+}
+
+// removeEdge removes an edge from the node's list of edges that points to the specified destination node.
+//
+// Parameters:
+//   - to: The identifier of the destination node whose edge needs to be removed.
+//
+// Returns:
+//   - nil if the edge is successfully removed.
+//   - An error if the edge does not exist.
+//
+// Notes:
+//   - If the specified edge is found, it is removed, and the node's edge list is updated.
+func (n *Node) removeEdge(to Identifier) error {
+	for i, e := range n.edges {
+		if e.To() == to {
+			// Remove the edge by slicing the edge list.
+			n.edges = append(n.edges[:i], n.edges[i+1:]...)
+
+			return nil
+		}
+	}
+
+	// Return an error if the specified edge does not exist.
+	return err.NotExistEdge(n.identifier.String(), to.String())
 }
 
 // ID returns the unique identifier of the node.
