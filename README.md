@@ -1,3 +1,3 @@
 # Netrics
 
-Network graph metrics analyzer implement by Go-lang
+Network graph metrics parallel analyzer implement by Go-lang
