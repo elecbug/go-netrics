@@ -7,7 +7,6 @@ type Node struct {
 	identifier Identifier // Unique identifier for the node.
 	Name       string     // A human-readable name for the node, which can be duplicated across nodes.
 	edges      []*Edge    // A list of edges originating from this node.
-	alive      bool       // A flag indicating whether the node is active (true) or inactive (false).
 }
 
 // newNode creates a new Node instance.
@@ -21,7 +20,6 @@ func newNode(identifier Identifier, name string) *Node {
 		identifier: identifier,
 		Name:       name,
 		edges:      make([]*Edge, 0), // Initialize the edges list as empty.
-		alive:      false,            // Default to an inactive state.
 	}
 }
 
@@ -50,15 +48,4 @@ func (n Node) Edges() []Edge {
 	}
 
 	return result
-}
-
-// Up activates the node, marking it as alive.
-func (n *Node) Up() {
-	n.alive = true
-}
-
-// Down deactivates the node, marking it as inactive and removing all its edges.
-func (n *Node) Down() {
-	n.alive = false
-	n.edges = []*Edge{} // Clear all edges connected to this node.
 }
