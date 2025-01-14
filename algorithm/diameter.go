@@ -1,7 +1,7 @@
 package algorithm
 
 import (
-	"github.com/elecbug/go-graphtric/graph"
+	"github.com/elecbug/go-netrics/graph"
 )
 
 // Diameter computes the diameter of the graph for a Unit.

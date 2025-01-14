@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/elecbug/go-graphtric/algorithm"
-	"github.com/elecbug/go-graphtric/graph"
+	"github.com/elecbug/go-netrics/algorithm"
+	"github.com/elecbug/go-netrics/graph"
 )
 
 func TestEfficiency(t *testing.T) {
