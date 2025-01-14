@@ -23,3 +23,7 @@ func AlreadyNode(key string) error {
 func NotExistNode(key string) error {
 	return fmt.Errorf("node not exist: [%s]", key)
 }
+
+func NotExistEdge(fromKey, toKey string) error {
+	return fmt.Errorf("edge not exist: [%s ---> %s]", fromKey, toKey)
+}

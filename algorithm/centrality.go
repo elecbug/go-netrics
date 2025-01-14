@@ -10,15 +10,14 @@ import (
 // BetweennessCentrality computes the betweenness centrality of each node in the graph for a Unit.
 // Betweenness centrality measures how often a node appears on the shortest paths between pairs of other nodes.
 //
-// Parameters:
-//   - g: The graph to compute the betweenness centrality for.
-//
 // Returns:
 //   - A map where the keys are node identifiers and the values are the betweenness centrality scores.
-func (u *Unit) BetweennessCentrality(g *graph.Graph) map[graph.Identifier]float64 {
+func (u *Unit) BetweennessCentrality() map[graph.Identifier]float64 {
+	g := u.graph
+
 	if !g.Updated() || !u.updated {
 		// Recompute shortest paths if the graph or unit has been updated.
-		u.computePaths(g)
+		u.computePaths()
 	}
 
 	centrality := make(map[graph.Identifier]float64)
@@ -54,15 +53,14 @@ func (u *Unit) BetweennessCentrality(g *graph.Graph) map[graph.Identifier]float6
 // BetweennessCentrality computes the betweenness centrality of each node in the graph for a ParallelUnit.
 // The computation is performed in parallel for better performance on larger graphs.
 //
-// Parameters:
-//   - g: The graph to compute the betweenness centrality for.
-//
 // Returns:
 //   - A map where the keys are node identifiers and the values are the betweenness centrality scores.
-func (pu *ParallelUnit) BetweennessCentrality(g *graph.Graph) map[graph.Identifier]float64 {
+func (pu *ParallelUnit) BetweennessCentrality() map[graph.Identifier]float64 {
+	g := pu.graph
+
 	if !g.Updated() || !pu.updated {
 		// Recompute shortest paths if the graph or unit has been updated.
-		pu.computePaths(g)
+		pu.computePaths()
 	}
 
 	centrality := make(map[graph.Identifier]float64)
@@ -123,12 +121,10 @@ func (pu *ParallelUnit) BetweennessCentrality(g *graph.Graph) map[graph.Identifi
 // DegreeCentrality computes the degree centrality of each node in the graph for a Unit.
 // Degree centrality is the number of direct connections a node has to other nodes.
 //
-// Parameters:
-//   - g: The graph to compute the degree centrality for.
-//
 // Returns:
 //   - A map where the keys are node identifiers and the values are the degree centrality scores.
-func (u *Unit) DegreeCentrality(g *graph.Graph) map[graph.Identifier]float64 {
+func (u *Unit) DegreeCentrality() map[graph.Identifier]float64 {
+	g := u.graph
 	centrality := make(map[graph.Identifier]float64)
 
 	// Initialize centrality scores for all nodes to 0.
@@ -160,12 +156,10 @@ func (u *Unit) DegreeCentrality(g *graph.Graph) map[graph.Identifier]float64 {
 // DegreeCentrality computes the degree centrality of each node in the graph for a ParallelUnit.
 // The computation is performed in parallel for better performance on larger graphs.
 //
-// Parameters:
-//   - g: The graph to compute the degree centrality for.
-//
 // Returns:
 //   - A map where the keys are node identifiers and the values are the degree centrality scores.
-func (pu *ParallelUnit) DegreeCentrality(g *graph.Graph) map[graph.Identifier]float64 {
+func (pu *ParallelUnit) DegreeCentrality() map[graph.Identifier]float64 {
+	g := pu.graph
 	centrality := make(map[graph.Identifier]float64)
 
 	// Initialize centrality scores for all nodes to 0.
@@ -224,12 +218,10 @@ func (pu *ParallelUnit) DegreeCentrality(g *graph.Graph) map[graph.Identifier]fl
 // EigenvectorCentrality computes the eigenvector centrality of each node in the graph for a Unit.
 // Eigenvector centrality assigns scores to nodes based on the importance of their neighbors.
 //
-// Parameters:
-//   - g: The graph to compute the eigenvector centrality for.
-//
 // Returns:
 //   - A map where the keys are node identifiers and the values are the eigenvector centrality scores.
-func (u *Unit) EigenvectorCentrality(g *graph.Graph, maxIter int, tol float64) map[graph.Identifier]float64 {
+func (u *Unit) EigenvectorCentrality(maxIter int, tol float64) map[graph.Identifier]float64 {
+	g := u.graph
 	matrix := g.ToMatrix()
 	n := len(matrix)
 
@@ -287,12 +279,10 @@ func (u *Unit) EigenvectorCentrality(g *graph.Graph, maxIter int, tol float64) m
 // EigenvectorCentrality computes the eigenvector centrality of each node in the graph for a ParallelUnit.
 // The computation is performed in parallel for better performance on larger graphs.
 //
-// Parameters:
-//   - g: The graph to compute the eigenvector centrality for.
-//
 // Returns:
 //   - A map where the keys are node identifiers and the values are the eigenvector centrality scores.
-func (pu *ParallelUnit) EigenvectorCentrality(g *graph.Graph, maxIter int, tol float64) map[graph.Identifier]float64 {
+func (pu *ParallelUnit) EigenvectorCentrality(maxIter int, tol float64) map[graph.Identifier]float64 {
+	g := pu.graph
 	matrix := g.ToMatrix()
 	n := len(matrix)
 

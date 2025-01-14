@@ -32,14 +32,14 @@ func TestCentrality(t *testing.T) {
 		g.AddEdge(from, to)
 	}
 
-	pu := algorithm.NewParallelUnit(40)
-	t.Logf("betweenness cen: %v\n", pu.BetweennessCentrality(g))
-	t.Logf("degree cen: %v\n", pu.DegreeCentrality(g))
-	t.Logf("eigenvector cen: %v\n", pu.EigenvectorCentrality(g, 100, 1e-6))
+	pu := algorithm.NewParallelUnit(g, 40)
+	t.Logf("betweenness cen: %v\n", pu.BetweennessCentrality())
+	t.Logf("degree cen: %v\n", pu.DegreeCentrality())
+	t.Logf("eigenvector cen: %v\n", pu.EigenvectorCentrality(100, 1e-6))
 
-	u := algorithm.NewUnit()
-	t.Logf("betweenness cen: %v\n", u.BetweennessCentrality(g))
-	t.Logf("degree cen: %v\n", u.DegreeCentrality(g))
-	t.Logf("degree cen: %v\n", u.DegreeCentrality(g))
-	t.Logf("eigenvector cen: %v\n", u.EigenvectorCentrality(g, 100, 1e-6))
+	u := algorithm.NewUnit(g)
+	t.Logf("betweenness cen: %v\n", u.BetweennessCentrality())
+	t.Logf("degree cen: %v\n", u.DegreeCentrality())
+	t.Logf("degree cen: %v\n", u.DegreeCentrality())
+	t.Logf("eigenvector cen: %v\n", u.EigenvectorCentrality(100, 1e-6))
 }

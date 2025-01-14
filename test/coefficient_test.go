@@ -32,15 +32,15 @@ func TestCoefficient(t *testing.T) {
 		g.AddEdge(from, to)
 	}
 
-	pu := algorithm.NewParallelUnit(40)
+	pu := algorithm.NewParallelUnit(g, 40)
 
-	glo, loc := pu.ClusteringCoefficient(g)
+	glo, loc := pu.ClusteringCoefficient()
 	t.Logf("clustering coef: %v, %f\n", glo, loc)
-	t.Logf("rich club coef: %v\n", pu.RichClubCoefficient(g, 5))
+	t.Logf("rich club coef: %v\n", pu.RichClubCoefficient(5))
 
-	u := algorithm.NewUnit()
+	u := algorithm.NewUnit(g)
 
-	glo, loc = u.ClusteringCoefficient(g)
+	glo, loc = u.ClusteringCoefficient()
 	t.Logf("clustering coef: %v, %f\n", glo, loc)
-	t.Logf("rich club coef: %v\n", u.RichClubCoefficient(g, 5))
+	t.Logf("rich club coef: %v\n", u.RichClubCoefficient(5))
 }

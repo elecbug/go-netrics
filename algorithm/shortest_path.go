@@ -7,32 +7,13 @@ import (
 	"github.com/elecbug/go-netrics/graph"
 )
 
-// ShortestPath computes the shortest path between two nodes in a graph.
-//
-// Parameters:
-//   - g: The graph to perform the computation on.
-//   - start: The starting node identifier.
-//   - end: The ending node identifier.
-//
-// Returns:
-//   - A graph.Path containing the shortest path and its total distance.
-//   - If no path exists, the returned Path has distance INF and an empty node sequence.
-func ShortestPath(g *graph.Graph, start, end graph.Identifier) *graph.Path {
-	if g.Type() == graph.DirectedWeighted || g.Type() == graph.UndirectedWeighted {
-		return weightedShortestPath(g.ToMatrix(), start, end)
-	} else if g.Type() == graph.DirectedUnweighted || g.Type() == graph.UndirectedUnweighted {
-		return unweightedShortestPath(g.ToMatrix(), start, end)
-	} else {
-		return graph.NewPath(graph.INF, []graph.Identifier{})
-	}
-}
-
 // computePaths calculates all shortest paths between every pair of nodes in the graph for a Unit.
 // After computation, the `shortestPaths` field in the Unit is updated and sorted by path distance in ascending order.
 //
 // Parameters:
 //   - g: The graph to perform the computation on.
-func (u *Unit) computePaths(g *graph.Graph) {
+func (u *Unit) computePaths() {
+	g := u.graph
 	u.shortestPaths = []graph.Path{}
 	n := len(g.ToMatrix())
 
@@ -55,8 +36,8 @@ func (u *Unit) computePaths(g *graph.Graph) {
 		return u.shortestPaths[i].Distance() < u.shortestPaths[j].Distance()
 	})
 
-	g.Update()
 	u.updated = true
+	g.Update()
 }
 
 // computePaths calculates all shortest paths in parallel for a ParallelUnit.
@@ -64,7 +45,8 @@ func (u *Unit) computePaths(g *graph.Graph) {
 //
 // Parameters:
 //   - g: The graph to perform the computation on.
-func (pu *ParallelUnit) computePaths(g *graph.Graph) {
+func (pu *ParallelUnit) computePaths() {
+	g := pu.graph
 	pu.shortestPaths = []graph.Path{}
 
 	type to struct {
@@ -123,8 +105,28 @@ func (pu *ParallelUnit) computePaths(g *graph.Graph) {
 		return pu.shortestPaths[i].Distance() < pu.shortestPaths[j].Distance()
 	})
 
-	g.Update()
 	pu.updated = true
+	g.Update()
+}
+
+// ShortestPath computes the shortest path between two nodes in a graph.
+//
+// Parameters:
+//   - g: The graph to perform the computation on.
+//   - start: The starting node identifier.
+//   - end: The ending node identifier.
+//
+// Returns:
+//   - A graph.Path containing the shortest path and its total distance.
+//   - If no path exists, the returned Path has distance INF and an empty node sequence.
+func ShortestPath(g *graph.Graph, start, end graph.Identifier) *graph.Path {
+	if g.Type() == graph.DirectedWeighted || g.Type() == graph.UndirectedWeighted {
+		return weightedShortestPath(g.ToMatrix(), start, end)
+	} else if g.Type() == graph.DirectedUnweighted || g.Type() == graph.UndirectedUnweighted {
+		return unweightedShortestPath(g.ToMatrix(), start, end)
+	} else {
+		return graph.NewPath(graph.INF, []graph.Identifier{})
+	}
 }
 
 // weightedShortestPath computes the shortest path between two nodes in a weighted graph.

@@ -6,18 +6,17 @@ import (
 
 // AverageShortestPathLength computes the average shortest path length in the graph.
 //
-// Parameters:
-//   - g: The graph to compute the metric for.
-//
 // Returns:
 //   - The average shortest path length as a float64.
 //
 // Notes:
 //   - If no shortest paths are found, the function returns 0.
-func (u *Unit) AverageShortestPathLength(g *graph.Graph) float64 {
+func (u *Unit) AverageShortestPathLength() float64 {
+	g := u.graph
+
 	if !g.Updated() || !u.updated {
 		// Recompute shortest paths if the graph or unit has been updated.
-		u.computePaths(g)
+		u.computePaths()
 	}
 
 	var totalDistance graph.Distance = 0
@@ -38,10 +37,12 @@ func (u *Unit) AverageShortestPathLength(g *graph.Graph) float64 {
 
 // ParallelUnit version of AverageShortestPathLength.
 // Computes the average shortest path length using parallel computations.
-func (pu *ParallelUnit) AverageShortestPathLength(g *graph.Graph) float64 {
+func (pu *ParallelUnit) AverageShortestPathLength() float64 {
+	g := pu.graph
+
 	if !g.Updated() || !pu.updated {
 		// Recompute shortest paths if the graph or unit has been updated.
-		pu.computePaths(g)
+		pu.computePaths()
 	}
 
 	var totalDistance graph.Distance = 0
@@ -63,7 +64,6 @@ func (pu *ParallelUnit) AverageShortestPathLength(g *graph.Graph) float64 {
 // PercentileShortestPathLength returns the shortest path length at the specified percentile.
 //
 // Parameters:
-//   - g: The graph to compute the metric for.
 //   - percentile: A float64 between 0 and 1 indicating the desired percentile.
 //
 // Returns:
@@ -72,10 +72,12 @@ func (pu *ParallelUnit) AverageShortestPathLength(g *graph.Graph) float64 {
 // Notes:
 //   - The percentile is calculated based on the sorted list of shortest paths.
 //   - If the percentile is out of range, it is clamped to valid indices.
-func (u *Unit) PercentileShortestPathLength(g *graph.Graph, percentile float64) graph.Distance {
+func (u *Unit) PercentileShortestPathLength(percentile float64) graph.Distance {
+	g := u.graph
+
 	if !g.Updated() || !u.updated {
 		// Recompute shortest paths if the graph or unit has been updated.
-		u.computePaths(g)
+		u.computePaths()
 	}
 
 	// Calculate the index for the desired percentile.
@@ -93,10 +95,12 @@ func (u *Unit) PercentileShortestPathLength(g *graph.Graph, percentile float64) 
 
 // ParallelUnit version of PercentileShortestPathLength.
 // Computes the percentile shortest path length using parallel computations.
-func (pu *ParallelUnit) PercentileShortestPathLength(g *graph.Graph, percentile float64) graph.Distance {
+func (pu *ParallelUnit) PercentileShortestPathLength(percentile float64) graph.Distance {
+	g := pu.graph
+
 	if !g.Updated() || !pu.updated {
 		// Recompute shortest paths if the graph or unit has been updated.
-		pu.computePaths(g)
+		pu.computePaths()
 	}
 
 	// Calculate the index for the desired percentile.

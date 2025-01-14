@@ -5,45 +5,50 @@ import (
 )
 
 // Unit represents a computation unit for graph algorithms.
-// It is used to store and compute shortest paths within a graph.
-//
+// It stores shortest paths within the graph and performs computations.
 // Fields:
-//   - shortestPaths: A slice of all shortest paths in the graph, sorted by their distance in ascending order.
-//   - updated: A boolean indicating whether the paths are up-to-date or if the graph has been modified.
+//   - shortestPaths: A slice of all shortest paths in the graph, sorted by distance in ascending order.
+//   - graph: A reference to the graph on which computations are performed.
 type Unit struct {
 	shortestPaths []graph.Path // Stores the shortest paths for the graph, sorted by distance in ascending order.
-	updated       bool         // Indicates whether the data needs to be recalculated.
+	graph         *graph.Graph // A reference to the graph associated with this computation unit.
+	updated       bool         // Update information for shortest paths
 }
 
-// ParallelUnit is an extension of Unit for parallel computation.
-// It supports running graph algorithms using multiple cores.
-//
+// ParallelUnit extends Unit for parallel computation of graph algorithms.
+// It supports dividing tasks across multiple CPU cores for better performance.
 // Fields:
-//   - Unit: Embeds the base Unit structure for algorithm computations.
-//   - maxCore: The maximum number of cores to be used for parallel processing.
+//   - Unit: Embeds the Unit structure for shared functionality.
+//   - maxCore: The maximum number of CPU cores to use for parallel computation.
 type ParallelUnit struct {
 	Unit         // Embeds the Unit structure for shared functionality.
 	maxCore uint // Maximum number of CPU cores to use for parallel computation.
 }
 
 // NewUnit creates and initializes a new Unit instance.
-// Returns a pointer to the newly created Unit.
-func NewUnit() *Unit {
+// Parameters:
+//   - g: The graph to associate with this computation unit.
+//
+// Returns:
+//   - A pointer to the newly created Unit.
+func NewUnit(g *graph.Graph) *Unit {
 	return &Unit{
-		shortestPaths: make([]graph.Path, 0), // Initialize with an empty slice of paths.
-		updated:       false,                 // Initially set to false, indicating no updates yet.
+		shortestPaths: make([]graph.Path, g.EdgeCount()), // Initialize with an empty slice of paths.
+		graph:         g,                                 // Associate the graph with this Unit.
+		updated:       false,
 	}
 }
 
 // NewParallelUnit creates and initializes a new ParallelUnit instance.
-//
 // Parameters:
-//   - core: The maximum number of cores to use for parallel computations.
+//   - g: The graph to associate with this computation unit.
+//   - core: The maximum number of CPU cores to use for parallel computations.
 //
-// Returns a pointer to the newly created ParallelUnit.
-func NewParallelUnit(core uint) *ParallelUnit {
+// Returns:
+//   - A pointer to the newly created ParallelUnit.
+func NewParallelUnit(g *graph.Graph, core uint) *ParallelUnit {
 	return &ParallelUnit{
-		Unit:    *NewUnit(), // Initialize the embedded Unit structure.
-		maxCore: core,       // Set the maximum number of cores for parallel processing.
+		Unit:    *NewUnit(g), // Initialize the embedded Unit structure.
+		maxCore: core,        // Set the maximum number of cores for parallel processing.
 	}
 }

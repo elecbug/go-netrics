@@ -128,6 +128,58 @@ func (g *Graph) AddWeightEdge(from, to Identifier, distance Distance) error {
 		return err.SelfEdge(from.String())
 	}
 
+	f := g.nodes.find(from)
+	t := g.nodes.find(to)
+
+	// Ensure both nodes exist in the graph.
+	if f == nil {
+		return err.NotExistNode(from.String())
+	}
+	if t == nil {
+		return err.NotExistNode(to.String())
+	}
+
+	// Add the edge to the source node.
+	err := f.addEdge(to, distance)
+
+	if err != nil {
+		return err
+	}
+
+	// Add a reverse edge for undirected graphs.
+	if g.graphType == UndirectedUnweighted || g.graphType == UndirectedWeighted {
+		err = t.addEdge(from, distance)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	g.updated = false // Mark the graph as modified.
+	g.edgeCount++     // Update edge count
+
+	return nil
+}
+
+// RemoveEdge removes an edge between two nodes in the graph.
+// For undirected graphs, the reverse edge is also removed.
+//
+// Parameters:
+//   - from: The identifier of the source node.
+//   - to: The identifier of the destination node.
+//
+// Returns:
+//   - nil if the edge is successfully removed.
+//   - An error if the edge or nodes do not exist, or if the edge is invalid (e.g., a self-loop).
+//
+// Notes:
+//   - The graph's `updated` flag is set to false to indicate that modifications have been made.
+//   - For undirected graphs, the reverse edge (to -> from) is also removed.
+func (g *Graph) RemoveEdge(from, to Identifier) error {
+	if from == to {
+		return err.SelfEdge(from.String())
+	}
+
 	// Ensure both nodes exist in the graph.
 	if g.nodes.find(from) == nil {
 		return err.NotExistNode(from.String())
@@ -136,19 +188,18 @@ func (g *Graph) AddWeightEdge(from, to Identifier, distance Distance) error {
 		return err.NotExistNode(to.String())
 	}
 
-	// Prevent duplicate edges.
-	for _, e := range g.nodes.find(from).Edges() {
-		if e.To() == to {
-			return err.AlreadyEdge(from.String(), to.String())
-		}
+	err := g.nodes.find(from).removeEdge(to)
+
+	if err != nil {
+		return err
 	}
 
-	// Add the edge to the source node.
-	g.nodes.find(from).addEdge(to, distance)
-
-	// Add a reverse edge for undirected graphs.
 	if g.graphType == UndirectedUnweighted || g.graphType == UndirectedWeighted {
-		g.nodes.find(to).addEdge(from, distance)
+		err = g.nodes.find(to).removeEdge(to)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	g.updated = false // Mark the graph as modified.

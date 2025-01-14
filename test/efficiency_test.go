@@ -32,13 +32,13 @@ func TestEfficiency(t *testing.T) {
 		g.AddEdge(from, to)
 	}
 
-	pu := algorithm.NewParallelUnit(40)
+	pu := algorithm.NewParallelUnit(g, 40)
 
-	t.Logf("local eff: %v\n", pu.LocalEfficiency(g))
-	t.Logf("global eff: %v\n", pu.GlobalEfficiency(g))
+	t.Logf("local eff: %v\n", pu.LocalEfficiency())
+	t.Logf("global eff: %v\n", pu.GlobalEfficiency())
 
-	u := algorithm.NewUnit()
+	u := algorithm.NewUnit(g)
 
-	t.Logf("local eff: %v\n", u.LocalEfficiency(g))
-	t.Logf("global eff: %v\n", u.GlobalEfficiency(g))
+	t.Logf("local eff: %v\n", u.LocalEfficiency())
+	t.Logf("global eff: %v\n", u.GlobalEfficiency())
 }
