@@ -1,7 +1,7 @@
 package graph
 
 import (
-	err "github.com/elecbug/go-graphtric/err" // Custom error package
+	err "github.com/elecbug/go-netrics/err" // Custom error package
 )
 
 // graphNodes represents a collection of nodes in a graph.

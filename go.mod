@@ -1,4 +1,4 @@
-module github.com/elecbug/go-graphtric
+module github.com/elecbug/go-netrics
 
 go 1.21.5
 

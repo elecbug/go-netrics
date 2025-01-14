@@ -4,7 +4,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/elecbug/go-graphtric/graph"
+	"github.com/elecbug/go-netrics/graph"
 )
 
 // ShortestPath computes the shortest path between two nodes in a graph.

@@ -4,7 +4,7 @@ import (
 	"math"
 	"sync"
 
-	"github.com/elecbug/go-graphtric/graph"
+	"github.com/elecbug/go-netrics/graph"
 )
 
 // BetweennessCentrality computes the betweenness centrality of each node in the graph for a Unit.

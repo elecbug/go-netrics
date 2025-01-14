@@ -3,7 +3,7 @@ package algorithm
 import (
 	"sync"
 
-	"github.com/elecbug/go-graphtric/graph"
+	"github.com/elecbug/go-netrics/graph"
 )
 
 // ClusteringCoefficient computes the local and global clustering coefficients for a graph using a Unit.

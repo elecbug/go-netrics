@@ -3,7 +3,7 @@ package algorithm
 import (
 	"sync"
 
-	"github.com/elecbug/go-graphtric/graph"
+	"github.com/elecbug/go-netrics/graph"
 )
 
 // GlobalEfficiency computes the global efficiency of a graph using a Unit.
