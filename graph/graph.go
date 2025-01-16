@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	err "github.com/elecbug/go-netrics/err" // Custom error package
+	"github.com/elecbug/go-netrics/graph/internal/graph_err" // Custom error package
 )
 
 // Graph represents the core structure of a graph.
@@ -64,6 +64,15 @@ func (g *Graph) AddNode(name string) (*Node, error) {
 // Returns an error if the node does not exist.
 func (g *Graph) RemoveNode(identifier Identifier) error {
 	g.updated = false // Mark the graph as modified.
+
+	for _, edge := range g.nodes.find(identifier).edges {
+		err := g.RemoveEdge(identifier, edge.to)
+
+		if err != nil {
+			return err
+		}
+	}
+
 	return g.nodes.remove(identifier)
 }
 
@@ -79,7 +88,7 @@ func (g *Graph) FindNode(identifier Identifier) (*Node, error) {
 	if result != nil {
 		return result, nil
 	} else {
-		return nil, err.NotExistNode(identifier.String())
+		return nil, graph_err.NotExistNode(identifier.String())
 	}
 }
 
@@ -95,7 +104,7 @@ func (g *Graph) FindNodesByName(name string) ([]*Node, error) {
 	if result != nil {
 		return result, nil
 	} else {
-		return nil, err.NotExistNode(name)
+		return nil, graph_err.NotExistNode(name)
 	}
 }
 
@@ -121,11 +130,11 @@ func (g *Graph) AddEdge(from, to Identifier) error {
 func (g *Graph) AddWeightEdge(from, to Identifier, distance Distance) error {
 	// Check for invalid edge types and self-loops.
 	if (g.graphType == DirectedUnweighted || g.graphType == UndirectedUnweighted) && distance != 1 {
-		return err.InvalidEdge(g.graphType.String(), fmt.Sprintf("weight: %d", distance))
+		return graph_err.InvalidEdge(g.graphType.String(), fmt.Sprintf("weight: %d", distance))
 	}
 
 	if from == to {
-		return err.SelfEdge(from.String())
+		return graph_err.SelfEdge(from.String())
 	}
 
 	f := g.nodes.find(from)
@@ -133,10 +142,10 @@ func (g *Graph) AddWeightEdge(from, to Identifier, distance Distance) error {
 
 	// Ensure both nodes exist in the graph.
 	if f == nil {
-		return err.NotExistNode(from.String())
+		return graph_err.NotExistNode(from.String())
 	}
 	if t == nil {
-		return err.NotExistNode(to.String())
+		return graph_err.NotExistNode(to.String())
 	}
 
 	// Add the edge to the source node.
@@ -177,15 +186,15 @@ func (g *Graph) AddWeightEdge(from, to Identifier, distance Distance) error {
 //   - For undirected graphs, the reverse edge (to -> from) is also removed.
 func (g *Graph) RemoveEdge(from, to Identifier) error {
 	if from == to {
-		return err.SelfEdge(from.String())
+		return graph_err.SelfEdge(from.String())
 	}
 
 	// Ensure both nodes exist in the graph.
 	if g.nodes.find(from) == nil {
-		return err.NotExistNode(from.String())
+		return graph_err.NotExistNode(from.String())
 	}
 	if g.nodes.find(to) == nil {
-		return err.NotExistNode(to.String())
+		return graph_err.NotExistNode(to.String())
 	}
 
 	err := g.nodes.find(from).removeEdge(to)
@@ -247,8 +256,8 @@ func (g Graph) Type() GraphType {
 	return g.graphType
 }
 
-// Updated returns whether the graph has been updated since the last algorithmic computation.
-func (g Graph) Updated() bool {
+// IsUpdated returns whether the graph has been updated since the last algorithmic computation.
+func (g Graph) IsUpdated() bool {
 	return g.updated
 }
 

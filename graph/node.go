@@ -1,7 +1,7 @@
 package graph
 
 import (
-	err "github.com/elecbug/go-netrics/err" // Custom error package
+	"github.com/elecbug/go-netrics/graph/internal/graph_err" // Custom error package
 )
 
 // Node represents a node in the graph.
@@ -37,7 +37,7 @@ func (n *Node) addEdge(to Identifier, distance Distance) error {
 	// Prevent duplicate edges.
 	for _, e := range n.edges {
 		if e.To() == to {
-			return err.AlreadyEdge(n.identifier.String(), to.String())
+			return graph_err.AlreadyEdge(n.identifier.String(), to.String())
 		}
 	}
 
@@ -68,7 +68,7 @@ func (n *Node) removeEdge(to Identifier) error {
 	}
 
 	// Return an error if the specified edge does not exist.
-	return err.NotExistEdge(n.identifier.String(), to.String())
+	return graph_err.NotExistEdge(n.identifier.String(), to.String())
 }
 
 // ID returns the unique identifier of the node.

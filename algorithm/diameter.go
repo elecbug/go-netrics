@@ -15,7 +15,7 @@ import (
 func (u *Unit) Diameter() graph.Path {
 	g := u.graph
 
-	if !g.Updated() || !u.updated {
+	if !g.IsUpdated() || !u.updated {
 		// Recompute shortest paths if the graph or unit has been updated.
 		u.computePaths()
 	}
@@ -34,7 +34,7 @@ func (u *Unit) Diameter() graph.Path {
 func (pu *ParallelUnit) Diameter() graph.Path {
 	g := pu.graph
 
-	if !g.Updated() || !pu.updated {
+	if !g.IsUpdated() || !pu.updated {
 		// Recompute shortest paths if the graph or unit has been updated.
 		pu.computePaths()
 	}
