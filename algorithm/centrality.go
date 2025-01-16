@@ -15,7 +15,7 @@ import (
 func (u *Unit) BetweennessCentrality() map[graph.Identifier]float64 {
 	g := u.graph
 
-	if !g.Updated() || !u.updated {
+	if !g.IsUpdated() || !u.updated {
 		// Recompute shortest paths if the graph or unit has been updated.
 		u.computePaths()
 	}
@@ -58,7 +58,7 @@ func (u *Unit) BetweennessCentrality() map[graph.Identifier]float64 {
 func (pu *ParallelUnit) BetweennessCentrality() map[graph.Identifier]float64 {
 	g := pu.graph
 
-	if !g.Updated() || !pu.updated {
+	if !g.IsUpdated() || !pu.updated {
 		// Recompute shortest paths if the graph or unit has been updated.
 		pu.computePaths()
 	}

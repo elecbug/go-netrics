@@ -1,7 +1,7 @@
 package graph
 
 import (
-	err "github.com/elecbug/go-netrics/err" // Custom error package
+	"github.com/elecbug/go-netrics/graph/internal/graph_err" // Custom error package
 )
 
 // graphNodes represents a collection of nodes in a graph.
@@ -35,7 +35,7 @@ func newNodes(cap int) *graphNodes {
 func (ns *graphNodes) insert(node *Node) error {
 	if _, exists := ns.nodes[node.ID()]; exists {
 		// Return an error if the node identifier already exists in the collection.
-		return err.AlreadyNode(node.ID().String())
+		return graph_err.AlreadyNode(node.ID().String())
 	} else {
 		// Add the node to the nodes map.
 		ns.nodes[node.ID()] = node
@@ -77,7 +77,7 @@ func (ns *graphNodes) remove(identifier Identifier) error {
 		return nil
 	} else {
 		// Return an error if the node identifier does not exist.
-		return err.NotExistNode(identifier.String())
+		return graph_err.NotExistNode(identifier.String())
 	}
 }
 
