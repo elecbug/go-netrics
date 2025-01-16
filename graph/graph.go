@@ -203,7 +203,7 @@ func (g *Graph) RemoveEdge(from, to Identifier) error {
 	}
 
 	g.updated = false // Mark the graph as modified.
-	g.edgeCount++     // Update edge count
+	g.edgeCount--     // Update edge count
 
 	return nil
 }
