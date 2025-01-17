@@ -1,4 +1,4 @@
-package test
+package algorithm
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/elecbug/go-netrics/algorithm"
 	"github.com/elecbug/go-netrics/graph"
 )
 
@@ -32,13 +31,13 @@ func TestAverageShortestPathLength(t *testing.T) {
 		g.AddEdge(from, to)
 	}
 
-	pu := algorithm.NewParallelUnit(g, 40)
+	pu := NewParallelUnit(g, 40)
 	dia := pu.Diameter()
 	aspl := pu.AverageShortestPathLength()
 	pspl := pu.PercentileShortestPathLength(0.5)
 	t.Logf("diameter: %d, ASPL: %f, PSPL: %d\n", dia.Distance(), aspl, pspl)
 
-	u := algorithm.NewUnit(g)
+	u := NewUnit(g)
 	dia = u.Diameter()
 	aspl = u.AverageShortestPathLength()
 	t.Logf("diameter: %d, ASPL: %f\n", dia.Distance(), aspl)

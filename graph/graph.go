@@ -217,6 +217,40 @@ func (g *Graph) RemoveEdge(from, to Identifier) error {
 	return nil
 }
 
+// FindEdge searches for an edge between two nodes in the graph and returns its distance.
+//
+// Parameters:
+//   - from: The identifier of the source node.
+//   - to: The identifier of the destination node.
+//
+// Returns:
+//   - A pointer to the `Distance` of the edge if it exists.
+//   - An error if the edge or either of the nodes does not exist, or if attempting to find a self-loop edge.
+func (g *Graph) FindEdge(from, to Identifier) (*Distance, error) {
+	if from == to {
+		return nil, graph_err.SelfEdge(from.String())
+	}
+
+	f := g.nodes.find(from)
+	t := g.nodes.find(to)
+
+	// Ensure both nodes exist in the graph.
+	if f == nil {
+		return nil, graph_err.NotExistNode(from.String())
+	}
+	if t == nil {
+		return nil, graph_err.NotExistNode(to.String())
+	}
+
+	for _, e := range f.edges {
+		if e.to == to {
+			return &e.distance, nil
+		}
+	}
+
+	return nil, graph_err.NotExistEdge(from.String(), to.String())
+}
+
 // ToMatrix converts the graph to an adjacency matrix representation.
 // Returns a Matrix where each element represents the distance between two nodes.
 func (g *Graph) ToMatrix() Matrix {
@@ -233,8 +267,8 @@ func (g *Graph) ToMatrix() Matrix {
 
 	// Populate the matrix with edge distances.
 	for from_id, from := range g.nodes.nodes {
-		for _, from_edge := range from.Edges() {
-			matrix[from_id][from_edge.To()] = from_edge.Distance()
+		for _, from_edge := range from.edges {
+			matrix[from_id][from_edge.to] = from_edge.distance
 		}
 	}
 

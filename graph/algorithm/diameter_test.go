@@ -1,4 +1,4 @@
-package test
+package algorithm
 
 import (
 	"fmt"
@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/elecbug/go-netrics/algorithm"
 	"github.com/elecbug/go-netrics/graph"
 )
 
@@ -36,24 +35,24 @@ func TestDiameter(t *testing.T) {
 	// t.Logf("\n%s\n", g.ToMatrix().String())
 
 	s := time.Now()
-	pm := algorithm.NewParallelUnit(g, 40)
+	pm := NewParallelUnit(g, 40)
 	path := pm.Diameter()
 	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
 	duration := time.Since(s)
-	t.Logf("Execution time: %s", duration)
+	t.Logf("execution time: %s", duration)
 
 	s = time.Now()
-	um := algorithm.NewUnit(g)
+	um := NewUnit(g)
 	path = um.Diameter()
 	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
 	duration = time.Since(s)
-	t.Logf("Execution time: %s", duration)
+	t.Logf("execution time: %s", duration)
 
 	s = time.Now()
 	path = pm.Diameter()
 	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
 	duration = time.Since(s)
-	t.Logf("Execution time: %s", duration)
+	t.Logf("execution time: %s", duration)
 
 	for i := 0; i < g.NodeCount()*g.NodeCount(); i++ {
 		r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(i)))
@@ -71,5 +70,5 @@ func TestDiameter(t *testing.T) {
 	path = pm.Diameter()
 	t.Logf("diameter: %d, nodes: %v\n", path.Distance(), path.Nodes())
 	duration = time.Since(s)
-	t.Logf("Execution time: %s", duration)
+	t.Logf("execution time: %s", duration)
 }

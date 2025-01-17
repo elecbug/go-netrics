@@ -1,4 +1,4 @@
-package test
+package algorithm
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/elecbug/go-netrics/algorithm"
 	"github.com/elecbug/go-netrics/graph"
 )
 
@@ -32,13 +31,13 @@ func TestCoefficient(t *testing.T) {
 		g.AddEdge(from, to)
 	}
 
-	pu := algorithm.NewParallelUnit(g, 40)
+	pu := NewParallelUnit(g, 40)
 
 	glo, loc := pu.ClusteringCoefficient()
 	t.Logf("clustering coef: %v, %f\n", glo, loc)
 	t.Logf("rich club coef: %v\n", pu.RichClubCoefficient(5))
 
-	u := algorithm.NewUnit(g)
+	u := NewUnit(g)
 
 	glo, loc = u.ClusteringCoefficient()
 	t.Logf("clustering coef: %v, %f\n", glo, loc)

@@ -1,4 +1,4 @@
-package test
+package algorithm
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/elecbug/go-netrics/algorithm"
 	"github.com/elecbug/go-netrics/graph"
 )
 
@@ -32,12 +31,12 @@ func TestEfficiency(t *testing.T) {
 		g.AddEdge(from, to)
 	}
 
-	pu := algorithm.NewParallelUnit(g, 40)
+	pu := NewParallelUnit(g, 40)
 
 	t.Logf("local eff: %v\n", pu.LocalEfficiency())
 	t.Logf("global eff: %v\n", pu.GlobalEfficiency())
 
-	u := algorithm.NewUnit(g)
+	u := NewUnit(g)
 
 	t.Logf("local eff: %v\n", u.LocalEfficiency())
 	t.Logf("global eff: %v\n", u.GlobalEfficiency())

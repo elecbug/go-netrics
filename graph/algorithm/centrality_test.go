@@ -1,4 +1,4 @@
-package test
+package algorithm
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/elecbug/go-netrics/algorithm"
 	"github.com/elecbug/go-netrics/graph"
 )
 
@@ -32,12 +31,12 @@ func TestCentrality(t *testing.T) {
 		g.AddEdge(from, to)
 	}
 
-	pu := algorithm.NewParallelUnit(g, 40)
+	pu := NewParallelUnit(g, 40)
 	t.Logf("betweenness cen: %v\n", pu.BetweennessCentrality())
 	t.Logf("degree cen: %v\n", pu.DegreeCentrality())
 	t.Logf("eigenvector cen: %v\n", pu.EigenvectorCentrality(100, 1e-6))
 
-	u := algorithm.NewUnit(g)
+	u := NewUnit(g)
 	t.Logf("betweenness cen: %v\n", u.BetweennessCentrality())
 	t.Logf("degree cen: %v\n", u.DegreeCentrality())
 	t.Logf("degree cen: %v\n", u.DegreeCentrality())
