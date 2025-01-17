@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/elecbug/go-netrics/graph/internal/graph_err" // Custom error package
+	"github.com/elecbug/go-netrics/internal/graph/internal/graph_err" // Custom error package
 )
 
 // Graph represents the core structure of a graph.
@@ -12,7 +12,7 @@ import (
 // The `updated` field indicates whether the graph has been modified since the last algorithmic computation.
 type Graph struct {
 	nodes     *graphNodes // A collection of all nodes in the graph.
-	nowID     Identifier  // The next unique identifier to be assigned to a new node.
+	nowID     NodeID      // The next unique identifier to be assigned to a new node.
 	graphType GraphType   // The type of the graph (e.g., directed, undirected, weighted, unweighted).
 	updated   bool        // Tracks if the graph has been modified since the last update.
 	edgeCount int         // Number of edges in graph.
@@ -62,7 +62,7 @@ func (g *Graph) AddNode(name string) (*Node, error) {
 //   - identifier: The unique identifier of the node to remove.
 //
 // Returns an error if the node does not exist.
-func (g *Graph) RemoveNode(identifier Identifier) error {
+func (g *Graph) RemoveNode(identifier NodeID) error {
 	g.updated = false // Mark the graph as modified.
 
 	for _, edge := range g.nodes.find(identifier).edges {
@@ -82,7 +82,7 @@ func (g *Graph) RemoveNode(identifier Identifier) error {
 //   - identifier: The unique identifier of the node.
 //
 // Returns the Node and an error if the node does not exist.
-func (g *Graph) FindNode(identifier Identifier) (*Node, error) {
+func (g *Graph) FindNode(identifier NodeID) (*Node, error) {
 	result := g.nodes.find(identifier)
 
 	if result != nil {
@@ -115,7 +115,7 @@ func (g *Graph) FindNodesByName(name string) ([]*Node, error) {
 //   - to: The identifier of the destination node.
 //
 // Returns an error if the edge cannot be added.
-func (g *Graph) AddEdge(from, to Identifier) error {
+func (g *Graph) AddEdge(from, to NodeID) error {
 	return g.AddWeightEdge(from, to, 1)
 }
 
@@ -127,9 +127,9 @@ func (g *Graph) AddEdge(from, to Identifier) error {
 //   - distance: The weight of the edge.
 //
 // Returns an error if the edge cannot be added.
-func (g *Graph) AddWeightEdge(from, to Identifier, distance Distance) error {
+func (g *Graph) AddWeightEdge(from, to NodeID, distance Distance) error {
 	// Check for invalid edge types and self-loops.
-	if (g.graphType == DirectedUnweighted || g.graphType == UndirectedUnweighted) && distance != 1 {
+	if (g.graphType == DIRECTED_UNWEIGHTED || g.graphType == UNDIRECTED_UNWEIGHTED) && distance != 1 {
 		return graph_err.InvalidEdge(g.graphType.String(), fmt.Sprintf("weight: %d", distance))
 	}
 
@@ -156,7 +156,7 @@ func (g *Graph) AddWeightEdge(from, to Identifier, distance Distance) error {
 	}
 
 	// Add a reverse edge for undirected graphs.
-	if g.graphType == UndirectedUnweighted || g.graphType == UndirectedWeighted {
+	if g.graphType == UNDIRECTED_UNWEIGHTED || g.graphType == UNDIRECTED_WEIGHTED {
 		err = t.addEdge(from, distance)
 
 		if err != nil {
@@ -184,7 +184,7 @@ func (g *Graph) AddWeightEdge(from, to Identifier, distance Distance) error {
 // Notes:
 //   - The graph's `updated` flag is set to false to indicate that modifications have been made.
 //   - For undirected graphs, the reverse edge (to -> from) is also removed.
-func (g *Graph) RemoveEdge(from, to Identifier) error {
+func (g *Graph) RemoveEdge(from, to NodeID) error {
 	if from == to {
 		return graph_err.SelfEdge(from.String())
 	}
@@ -203,7 +203,7 @@ func (g *Graph) RemoveEdge(from, to Identifier) error {
 		return err
 	}
 
-	if g.graphType == UndirectedUnweighted || g.graphType == UndirectedWeighted {
+	if g.graphType == UNDIRECTED_UNWEIGHTED || g.graphType == UNDIRECTED_WEIGHTED {
 		err = g.nodes.find(to).removeEdge(to)
 
 		if err != nil {
@@ -217,9 +217,43 @@ func (g *Graph) RemoveEdge(from, to Identifier) error {
 	return nil
 }
 
-// ToMatrix converts the graph to an adjacency matrix representation.
+// FindEdge searches for an edge between two nodes in the graph and returns its distance.
+//
+// Parameters:
+//   - from: The identifier of the source node.
+//   - to: The identifier of the destination node.
+//
+// Returns:
+//   - A pointer to the `Distance` of the edge if it exists.
+//   - An error if the edge or either of the nodes does not exist, or if attempting to find a self-loop edge.
+func (g *Graph) FindEdge(from, to NodeID) (*Distance, error) {
+	if from == to {
+		return nil, graph_err.SelfEdge(from.String())
+	}
+
+	f := g.nodes.find(from)
+	t := g.nodes.find(to)
+
+	// Ensure both nodes exist in the graph.
+	if f == nil {
+		return nil, graph_err.NotExistNode(from.String())
+	}
+	if t == nil {
+		return nil, graph_err.NotExistNode(to.String())
+	}
+
+	for _, e := range f.edges {
+		if e.to == to {
+			return &e.distance, nil
+		}
+	}
+
+	return nil, graph_err.NotExistEdge(from.String(), to.String())
+}
+
+// Matrix converts the graph to an adjacency matrix representation.
 // Returns a Matrix where each element represents the distance between two nodes.
-func (g *Graph) ToMatrix() Matrix {
+func (g *Graph) Matrix() Matrix {
 	size := g.nowID
 	matrix := make([][]Distance, size)
 
@@ -233,12 +267,41 @@ func (g *Graph) ToMatrix() Matrix {
 
 	// Populate the matrix with edge distances.
 	for from_id, from := range g.nodes.nodes {
-		for _, from_edge := range from.Edges() {
-			matrix[from_id][from_edge.To()] = from_edge.Distance()
+		for _, from_edge := range from.edges {
+			matrix[from_id][from_edge.to] = from_edge.distance
 		}
 	}
 
 	return matrix
+}
+
+// String returns a string representation of the Matrix.
+// This method formats the matrix for easy readability:
+//   - Each row of the matrix is printed on a new line.
+//   - Values are separated by spaces, with "INF" used for unreachable nodes.
+func (g Graph) String() string {
+	result := ""
+
+	matrix := g.Matrix()
+
+	// Iterate over each row of the matrix.
+	for _, arr := range [][]Distance(matrix) {
+		// Iterate over each element in the row.
+		for _, a := range arr {
+			if a != INF {
+				// Print the distance if it is not `INF`.
+				result += fmt.Sprintf("%3d ", a)
+			} else {
+				// Use "INF" to represent unreachable nodes.
+				result += "INF "
+			}
+		}
+
+		// Add a newline at the end of each row.
+		result += "\n"
+	}
+
+	return result
 }
 
 // NodeCount returns the number of nodes in the graph.
@@ -265,20 +328,4 @@ func (g Graph) IsUpdated() bool {
 // This should be called after performing an algorithmic computation.
 func (g *Graph) Update() {
 	g.updated = true
-}
-
-// NodeIDs returns a slice of all node identifiers in the graph.
-// This function collects and returns the unique identifiers of all nodes stored in the graph.
-//
-// Returns:
-//   - A slice of `Identifier` representing the IDs of all nodes in the graph.
-func (g Graph) NodeIDs() []Identifier {
-	ids := []Identifier{}
-
-	// Iterate over the graph's nodes and collect their identifiers.
-	for id := range g.nodes.nodes {
-		ids = append(ids, id)
-	}
-
-	return ids
 }

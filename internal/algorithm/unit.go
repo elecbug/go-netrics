@@ -1,7 +1,7 @@
 package algorithm
 
 import (
-	"github.com/elecbug/go-netrics/graph"
+	"github.com/elecbug/go-netrics/internal/graph"
 )
 
 // Unit represents a computation unit for graph algorithms.

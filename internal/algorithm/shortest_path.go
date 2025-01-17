@@ -4,7 +4,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/elecbug/go-netrics/graph"
+	"github.com/elecbug/go-netrics/internal/graph"
 )
 
 // computePaths calculates all shortest paths between every pair of nodes in the graph for a Unit.
@@ -15,10 +15,10 @@ import (
 func (u *Unit) computePaths() {
 	g := u.graph
 	u.shortestPaths = []graph.Path{}
-	n := len(g.ToMatrix())
+	n := len(g.Matrix())
 
-	for start := graph.Identifier(0); start < graph.Identifier(n); start++ {
-		for end := graph.Identifier(0); end < graph.Identifier(n); end++ {
+	for start := graph.NodeID(0); start < graph.NodeID(n); start++ {
+		for end := graph.NodeID(0); end < graph.NodeID(n); end++ {
 			if start == end {
 				continue
 			}
@@ -50,11 +50,11 @@ func (pu *ParallelUnit) computePaths() {
 	pu.shortestPaths = []graph.Path{}
 
 	type to struct {
-		start graph.Identifier
-		end   graph.Identifier
+		start graph.NodeID
+		end   graph.NodeID
 	}
 
-	n := len(g.ToMatrix())
+	n := len(g.Matrix())
 
 	jobChan := make(chan to)
 	resultChan := make(chan graph.Path)
@@ -82,7 +82,7 @@ func (pu *ParallelUnit) computePaths() {
 		for start := 0; start < n; start++ {
 			for end := 0; end < n; end++ {
 				if start != end {
-					jobChan <- to{graph.Identifier(start), graph.Identifier(end)}
+					jobChan <- to{graph.NodeID(start), graph.NodeID(end)}
 				}
 			}
 		}
@@ -119,13 +119,13 @@ func (pu *ParallelUnit) computePaths() {
 // Returns:
 //   - A graph.Path containing the shortest path and its total distance.
 //   - If no path exists, the returned Path has distance INF and an empty node sequence.
-func ShortestPath(g *graph.Graph, start, end graph.Identifier) *graph.Path {
-	if g.Type() == graph.DirectedWeighted || g.Type() == graph.UndirectedWeighted {
-		return weightedShortestPath(g.ToMatrix(), start, end)
-	} else if g.Type() == graph.DirectedUnweighted || g.Type() == graph.UndirectedUnweighted {
-		return unweightedShortestPath(g.ToMatrix(), start, end)
+func ShortestPath(g *graph.Graph, start, end graph.NodeID) *graph.Path {
+	if g.Type() == graph.DIRECTED_WEIGHTED || g.Type() == graph.UNDIRECTED_WEIGHTED {
+		return weightedShortestPath(g.Matrix(), start, end)
+	} else if g.Type() == graph.DIRECTED_UNWEIGHTED || g.Type() == graph.UNDIRECTED_UNWEIGHTED {
+		return unweightedShortestPath(g.Matrix(), start, end)
 	} else {
-		return graph.NewPath(graph.INF, []graph.Identifier{})
+		return graph.NewPath(graph.INF, []graph.NodeID{})
 	}
 }
 
@@ -139,11 +139,11 @@ func ShortestPath(g *graph.Graph, start, end graph.Identifier) *graph.Path {
 //
 // Returns:
 //   - A graph.Path containing the shortest path and its total distance.
-func weightedShortestPath(matrix graph.Matrix, start, end graph.Identifier) *graph.Path {
+func weightedShortestPath(matrix graph.Matrix, start, end graph.NodeID) *graph.Path {
 	n := len(matrix)
 
 	if int(start) >= n || int(end) >= n {
-		return graph.NewPath(graph.INF, []graph.Identifier{})
+		return graph.NewPath(graph.INF, []graph.NodeID{})
 	}
 
 	dist := make([]graph.Distance, n)
@@ -184,10 +184,10 @@ func weightedShortestPath(matrix graph.Matrix, start, end graph.Identifier) *gra
 		}
 	}
 
-	path := []graph.Identifier{}
+	path := []graph.NodeID{}
 
 	for at := int(end); at != -1; at = prev[at] {
-		path = append(path, graph.Identifier(at))
+		path = append(path, graph.NodeID(at))
 	}
 
 	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
@@ -195,7 +195,7 @@ func weightedShortestPath(matrix graph.Matrix, start, end graph.Identifier) *gra
 	}
 
 	if dist[end] == graph.INF {
-		return graph.NewPath(graph.INF, []graph.Identifier{})
+		return graph.NewPath(graph.INF, []graph.NodeID{})
 	}
 
 	return graph.NewPath(dist[end], path)
@@ -211,11 +211,11 @@ func weightedShortestPath(matrix graph.Matrix, start, end graph.Identifier) *gra
 //
 // Returns:
 //   - A graph.Path containing the shortest path and its total distance.
-func unweightedShortestPath(matrix graph.Matrix, start, end graph.Identifier) *graph.Path {
+func unweightedShortestPath(matrix graph.Matrix, start, end graph.NodeID) *graph.Path {
 	n := len(matrix)
 
 	if int(start) >= n || int(end) >= n {
-		return graph.NewPath(graph.INF, []graph.Identifier{})
+		return graph.NewPath(graph.INF, []graph.NodeID{})
 	}
 
 	dist := make([]graph.Distance, n)
@@ -242,10 +242,10 @@ func unweightedShortestPath(matrix graph.Matrix, start, end graph.Identifier) *g
 		}
 	}
 
-	path := []graph.Identifier{}
+	path := []graph.NodeID{}
 
 	for at := int(end); at != -1; at = prev[at] {
-		path = append(path, graph.Identifier(at))
+		path = append(path, graph.NodeID(at))
 	}
 
 	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
@@ -253,7 +253,7 @@ func unweightedShortestPath(matrix graph.Matrix, start, end graph.Identifier) *g
 	}
 
 	if dist[end] == graph.INF {
-		return graph.NewPath(graph.INF, []graph.Identifier{})
+		return graph.NewPath(graph.INF, []graph.NodeID{})
 	}
 
 	return graph.NewPath(dist[end], path)

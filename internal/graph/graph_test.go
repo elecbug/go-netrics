@@ -1,14 +1,13 @@
-package test
+package graph
 
 import (
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/elecbug/go-netrics/graph"
 )
 
 func TestGraph(t *testing.T) {
-	g := graph.NewGraph(graph.UndirectedUnweighted, 10)
+	g := NewGraph(UNDIRECTED_UNWEIGHTED, 10)
 
 	_, err := g.AddNode("first")
 
@@ -108,5 +107,5 @@ func TestGraph(t *testing.T) {
 
 	t.Logf("%s\n", spew.Sdump(g))
 
-	t.Logf("%s\n", spew.Sdump(g.ToMatrix()))
+	t.Logf("%s\n", spew.Sdump(g.Matrix()))
 }

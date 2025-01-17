@@ -1,4 +1,4 @@
-package test
+package algorithm
 
 import (
 	"fmt"
@@ -6,13 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/elecbug/go-netrics/algorithm"
-	"github.com/elecbug/go-netrics/graph"
+	"github.com/elecbug/go-netrics/internal/graph"
 )
 
 func TestAverageShortestPathLength(t *testing.T) {
 	cap := 200
-	g := graph.NewGraph(graph.UndirectedUnweighted, cap)
+	g := graph.NewGraph(graph.UNDIRECTED_UNWEIGHTED, cap)
 
 	for i := 0; i < cap; i++ {
 		g.AddNode(fmt.Sprintf("%4d", i))
@@ -22,23 +21,23 @@ func TestAverageShortestPathLength(t *testing.T) {
 
 	for i := 0; i < g.NodeCount()*g.NodeCount()/100; i++ {
 		r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(i)))
-		from := graph.Identifier(r.Intn(g.NodeCount()))
+		from := graph.NodeID(r.Intn(g.NodeCount()))
 
 		r = rand.New(rand.NewSource(time.Now().UnixNano() + int64(i*i)))
-		to := graph.Identifier(r.Intn(g.NodeCount()))
+		to := graph.NodeID(r.Intn(g.NodeCount()))
 
 		// t.Logf("%d - %d", from, to)
 
 		g.AddEdge(from, to)
 	}
 
-	pu := algorithm.NewParallelUnit(g, 40)
+	pu := NewParallelUnit(g, 40)
 	dia := pu.Diameter()
 	aspl := pu.AverageShortestPathLength()
 	pspl := pu.PercentileShortestPathLength(0.5)
 	t.Logf("diameter: %d, ASPL: %f, PSPL: %d\n", dia.Distance(), aspl, pspl)
 
-	u := algorithm.NewUnit(g)
+	u := NewUnit(g)
 	dia = u.Diameter()
 	aspl = u.AverageShortestPathLength()
 	t.Logf("diameter: %d, ASPL: %f\n", dia.Distance(), aspl)

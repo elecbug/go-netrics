@@ -3,7 +3,7 @@ package algorithm
 import (
 	"sync"
 
-	"github.com/elecbug/go-netrics/graph"
+	"github.com/elecbug/go-netrics/internal/graph"
 )
 
 // GlobalEfficiency computes the global efficiency of a graph using a Unit.
@@ -73,7 +73,7 @@ func (pu *ParallelUnit) GlobalEfficiency() float64 {
 //
 // Returns:
 //   - A map where the keys are node identifiers and the values are the local efficiency scores.
-func (u *Unit) LocalEfficiency() map[graph.Identifier]float64 {
+func (u *Unit) LocalEfficiency() map[graph.NodeID]float64 {
 	g := u.graph
 
 	if !g.IsUpdated() || !u.updated {
@@ -81,10 +81,10 @@ func (u *Unit) LocalEfficiency() map[graph.Identifier]float64 {
 		u.computePaths()
 	}
 
-	localEfficiency := make(map[graph.Identifier]float64)
+	localEfficiency := make(map[graph.NodeID]float64)
 
 	// Group paths by their starting node
-	pathsBySource := make(map[graph.Identifier][]graph.Path)
+	pathsBySource := make(map[graph.NodeID][]graph.Path)
 	for _, path := range u.shortestPaths {
 		if len(path.Nodes()) > 0 {
 			source := path.Nodes()[0]
@@ -94,7 +94,7 @@ func (u *Unit) LocalEfficiency() map[graph.Identifier]float64 {
 
 	// Compute local efficiency for each node
 	for node, paths := range pathsBySource {
-		neighbors := make(map[graph.Identifier]bool)
+		neighbors := make(map[graph.NodeID]bool)
 
 		// Identify neighbors of the current node
 		for _, path := range paths {
@@ -103,7 +103,7 @@ func (u *Unit) LocalEfficiency() map[graph.Identifier]float64 {
 			}
 		}
 
-		neighborList := make([]graph.Identifier, 0, len(neighbors))
+		neighborList := make([]graph.NodeID, 0, len(neighbors))
 		for neighbor := range neighbors {
 			neighborList = append(neighborList, neighbor)
 		}
@@ -141,7 +141,7 @@ func (u *Unit) LocalEfficiency() map[graph.Identifier]float64 {
 //
 // Returns:
 //   - A map where the keys are node identifiers and the values are the local efficiency scores.
-func (pu *ParallelUnit) LocalEfficiency() map[graph.Identifier]float64 {
+func (pu *ParallelUnit) LocalEfficiency() map[graph.NodeID]float64 {
 	g := pu.graph
 
 	if !g.IsUpdated() || !pu.updated {
@@ -149,15 +149,15 @@ func (pu *ParallelUnit) LocalEfficiency() map[graph.Identifier]float64 {
 		pu.computePaths()
 	}
 
-	localEfficiency := make(map[graph.Identifier]float64)
+	localEfficiency := make(map[graph.NodeID]float64)
 	efficiencyChan := make(chan struct {
-		node  graph.Identifier
+		node  graph.NodeID
 		value float64
 	}, len(pu.shortestPaths))
 	var wg sync.WaitGroup
 
 	// Group paths by their starting node
-	pathsBySource := make(map[graph.Identifier][]graph.Path)
+	pathsBySource := make(map[graph.NodeID][]graph.Path)
 	for _, path := range pu.shortestPaths {
 		if len(path.Nodes()) > 0 {
 			source := path.Nodes()[0]
@@ -168,17 +168,17 @@ func (pu *ParallelUnit) LocalEfficiency() map[graph.Identifier]float64 {
 	// Compute local efficiency for each node in parallel
 	for node, paths := range pathsBySource {
 		wg.Add(1)
-		go func(node graph.Identifier, paths []graph.Path) {
+		go func(node graph.NodeID, paths []graph.Path) {
 			defer wg.Done()
 
-			neighbors := make(map[graph.Identifier]bool)
+			neighbors := make(map[graph.NodeID]bool)
 			for _, path := range paths {
 				if len(path.Nodes()) > 1 {
 					neighbors[path.Nodes()[1]] = true
 				}
 			}
 
-			neighborList := make([]graph.Identifier, 0, len(neighbors))
+			neighborList := make([]graph.NodeID, 0, len(neighbors))
 			for neighbor := range neighbors {
 				neighborList = append(neighborList, neighbor)
 			}
@@ -186,7 +186,7 @@ func (pu *ParallelUnit) LocalEfficiency() map[graph.Identifier]float64 {
 			k := len(neighborList)
 			if k < 2 {
 				efficiencyChan <- struct {
-					node  graph.Identifier
+					node  graph.NodeID
 					value float64
 				}{node: node, value: 0.0}
 				return
@@ -206,7 +206,7 @@ func (pu *ParallelUnit) LocalEfficiency() map[graph.Identifier]float64 {
 			}
 
 			efficiencyChan <- struct {
-				node  graph.Identifier
+				node  graph.NodeID
 				value float64
 			}{node: node, value: totalEfficiency / float64(k*(k-1))}
 		}(node, paths)

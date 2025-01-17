@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"github.com/elecbug/go-netrics/graph/internal/graph_err" // Custom error package
+	"github.com/elecbug/go-netrics/internal/graph/internal/graph_err" // Custom error package
 )
 
 // graphNodes represents a collection of nodes in a graph.
@@ -9,8 +9,8 @@ import (
 //  1. `nodes`: Maps a node's unique identifier to its corresponding Node object.
 //  2. `nameMap`: Maps a node's name to a list of identifiers for nodes with that name.
 type graphNodes struct {
-	nodes   map[Identifier]*Node    // Maps node identifiers to Node instances.
-	nameMap map[string][]Identifier // Maps node names to lists of identifiers for nodes with the same name.
+	nodes   map[NodeID]*Node    // Maps node identifiers to Node instances.
+	nameMap map[string][]NodeID // Maps node names to lists of identifiers for nodes with the same name.
 }
 
 // newNodes creates and initializes a new graphNodes instance.
@@ -21,8 +21,8 @@ type graphNodes struct {
 // Returns a pointer to the newly created graphNodes instance.
 func newNodes(cap int) *graphNodes {
 	return &graphNodes{
-		nodes:   make(map[Identifier]*Node, cap),
-		nameMap: make(map[string][]Identifier, cap),
+		nodes:   make(map[NodeID]*Node, cap),
+		nameMap: make(map[string][]NodeID, cap),
 	}
 }
 
@@ -42,7 +42,7 @@ func (ns *graphNodes) insert(node *Node) error {
 
 		// Initialize the nameMap entry if it doesn't exist.
 		if ns.nameMap[node.Name] == nil {
-			ns.nameMap[node.Name] = make([]Identifier, 0)
+			ns.nameMap[node.Name] = make([]NodeID, 0)
 		}
 
 		// Add the node's identifier to the nameMap.
@@ -58,7 +58,7 @@ func (ns *graphNodes) insert(node *Node) error {
 //   - identifier: The unique identifier of the Node to remove.
 //
 // Returns an error if the Node does not exist in the collection.
-func (ns *graphNodes) remove(identifier Identifier) error {
+func (ns *graphNodes) remove(identifier NodeID) error {
 	if _, exists := ns.nodes[identifier]; exists {
 		// Retrieve the node's name for nameMap cleanup.
 		name := ns.nodes[identifier].Name
@@ -87,7 +87,7 @@ func (ns *graphNodes) remove(identifier Identifier) error {
 //   - identifier: The unique identifier of the Node.
 //
 // Returns the Node instance if found, or nil if the Node does not exist.
-func (ns *graphNodes) find(identifier Identifier) *Node {
+func (ns *graphNodes) find(identifier NodeID) *Node {
 	return ns.nodes[identifier]
 }
 

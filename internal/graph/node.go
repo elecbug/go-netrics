@@ -1,16 +1,16 @@
 package graph
 
 import (
-	"github.com/elecbug/go-netrics/graph/internal/graph_err" // Custom error package
+	"github.com/elecbug/go-netrics/internal/graph/internal/graph_err" // Custom error package
 )
 
 // Node represents a node in the graph.
 // It contains a unique identifier (`identifier`), a display name (`Name`),
 // the edges connected to the node (`edges`), and a flag (`alive`) indicating whether the node is active.
 type Node struct {
-	identifier Identifier // Unique identifier for the node.
-	Name       string     // A human-readable name for the node, which can be duplicated across nodes.
-	edges      []*Edge    // A list of edges originating from this node.
+	identifier NodeID  // Unique identifier for the node.
+	Name       string  // A human-readable name for the node, which can be duplicated across nodes.
+	edges      []*edge // A list of edges originating from this node.
 }
 
 // newNode creates a new Node instance.
@@ -20,11 +20,11 @@ type Node struct {
 //   - name: The display name for the node.
 //
 // Returns a pointer to the newly created Node.
-func newNode(identifier Identifier, name string) *Node {
+func newNode(identifier NodeID, name string) *Node {
 	return &Node{
 		identifier: identifier,
 		Name:       name,
-		edges:      make([]*Edge, 0), // Initialize the edges list as empty.
+		edges:      make([]*edge, 0), // Initialize the edges list as empty.
 	}
 }
 
@@ -33,10 +33,10 @@ func newNode(identifier Identifier, name string) *Node {
 // Parameters:
 //   - to: The identifier of the destination node.
 //   - distance: The weight of the edge.
-func (n *Node) addEdge(to Identifier, distance Distance) error {
+func (n *Node) addEdge(to NodeID, distance Distance) error {
 	// Prevent duplicate edges.
 	for _, e := range n.edges {
-		if e.To() == to {
+		if e.to == to {
 			return graph_err.AlreadyEdge(n.identifier.String(), to.String())
 		}
 	}
@@ -57,9 +57,9 @@ func (n *Node) addEdge(to Identifier, distance Distance) error {
 //
 // Notes:
 //   - If the specified edge is found, it is removed, and the node's edge list is updated.
-func (n *Node) removeEdge(to Identifier) error {
+func (n *Node) removeEdge(to NodeID) error {
 	for i, e := range n.edges {
-		if e.To() == to {
+		if e.to == to {
 			// Remove the edge by slicing the edge list.
 			n.edges = append(n.edges[:i], n.edges[i+1:]...)
 
@@ -73,18 +73,27 @@ func (n *Node) removeEdge(to Identifier) error {
 
 // ID returns the unique identifier of the node.
 // Useful for accessing or comparing nodes by their identifiers.
-func (n Node) ID() Identifier {
+func (n Node) ID() NodeID {
 	return n.identifier
 }
 
-// Edges returns a slice of all edges connected to this node.
-// The returned edges are copied from the internal structure to avoid direct modification.
-func (n Node) Edges() []Edge {
-	result := make([]Edge, len(n.edges)) // Pre-allocate the slice to avoid overhead.
+// edge represents a connection (edge) between two nodes in a graph.
+// It contains information about the destination node (`to`) and the weight of the edge (`distance`).
+type edge struct {
+	to       NodeID   // The destination node's unique identifier.
+	distance Distance // The weight or cost of traveling along this edge.
+}
 
-	for _, e := range n.edges {
-		result = append(result, *e) // Dereference the pointer to copy the edge.
+// newEdge creates a new Edge instance.
+//
+// Parameters:
+//   - to: The destination node's identifier.
+//   - distance: The weight of the edge.
+//
+// Returns a pointer to the newly created Edge.
+func newEdge(to NodeID, distance Distance) *edge {
+	return &edge{
+		to:       to,
+		distance: distance,
 	}
-
-	return result
 }
