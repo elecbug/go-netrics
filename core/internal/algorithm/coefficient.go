@@ -3,7 +3,7 @@ package algorithm
 import (
 	"sync"
 
-	"github.com/elecbug/go-netrics/graph"
+	"github.com/elecbug/go-netrics/core/internal/graph"
 )
 
 // ClusteringCoefficient computes the local and global clustering coefficients for a graph using a Unit.
@@ -13,13 +13,13 @@ import (
 // Returns:
 //   - A map where the keys are node identifiers and the values are the local clustering coefficients.
 //   - The global clustering coefficient as a float64.
-func (u *Unit) ClusteringCoefficient() (map[graph.Identifier]float64, float64) {
+func (u *Unit) ClusteringCoefficient() (map[graph.NodeID]float64, float64) {
 	g := u.graph
-	matrix := g.ToMatrix() // Get adjacency matrix representation of the graph.
-	n := len(matrix)       // Number of nodes in the graph.
+	matrix := g.Matrix() // Get adjacency matrix representation of the graph.
+	n := len(matrix)     // Number of nodes in the graph.
 
 	// Map to store local clustering coefficients for each node.
-	localCoeffs := make(map[graph.Identifier]float64)
+	localCoeffs := make(map[graph.NodeID]float64)
 	globalSum := 0.0 // Sum of all local clustering coefficients for computing the global coefficient.
 
 	// Iterate over all nodes to calculate local coefficients.
@@ -36,7 +36,7 @@ func (u *Unit) ClusteringCoefficient() (map[graph.Identifier]float64, float64) {
 		k := len(neighbors) // Degree of the node.
 		if k < 2 {
 			// If a node has fewer than 2 neighbors, its clustering coefficient is 0.
-			localCoeffs[graph.Identifier(v)] = 0.0
+			localCoeffs[graph.NodeID(v)] = 0.0
 			continue
 		}
 
@@ -52,7 +52,7 @@ func (u *Unit) ClusteringCoefficient() (map[graph.Identifier]float64, float64) {
 
 		// Compute the local clustering coefficient.
 		Cv := float64(2*e) / float64(k*(k-1))
-		localCoeffs[graph.Identifier(v)] = Cv
+		localCoeffs[graph.NodeID(v)] = Cv
 		globalSum += Cv
 	}
 
@@ -68,18 +68,18 @@ func (u *Unit) ClusteringCoefficient() (map[graph.Identifier]float64, float64) {
 // Returns:
 //   - A map where the keys are node identifiers and the values are the local clustering coefficients.
 //   - The global clustering coefficient as a float64.
-func (pu *ParallelUnit) ClusteringCoefficient() (map[graph.Identifier]float64, float64) {
+func (pu *ParallelUnit) ClusteringCoefficient() (map[graph.NodeID]float64, float64) {
 	g := pu.graph
-	matrix := g.ToMatrix() // Get adjacency matrix representation of the graph.
-	n := len(matrix)       // Number of nodes in the graph.
+	matrix := g.Matrix() // Get adjacency matrix representation of the graph.
+	n := len(matrix)     // Number of nodes in the graph.
 
 	// Map to store local clustering coefficients for each node.
-	localCoeffs := make(map[graph.Identifier]float64)
+	localCoeffs := make(map[graph.NodeID]float64)
 	globalSum := float64(0)
 
 	// Type to store intermediate results from goroutines.
 	type result struct {
-		node  graph.Identifier
+		node  graph.NodeID
 		value float64
 	}
 
@@ -104,7 +104,7 @@ func (pu *ParallelUnit) ClusteringCoefficient() (map[graph.Identifier]float64, f
 			k := len(neighbors) // Degree of the node.
 			if k < 2 {
 				// If a node has fewer than 2 neighbors, its clustering coefficient is 0.
-				resultChan <- result{node: graph.Identifier(node), value: 0.0}
+				resultChan <- result{node: graph.NodeID(node), value: 0.0}
 				return
 			}
 
@@ -120,7 +120,7 @@ func (pu *ParallelUnit) ClusteringCoefficient() (map[graph.Identifier]float64, f
 
 			// Compute the local clustering coefficient.
 			Cv := float64(2*e) / float64(k*(k-1))
-			resultChan <- result{node: graph.Identifier(node), value: Cv}
+			resultChan <- result{node: graph.NodeID(node), value: Cv}
 		}(v)
 	}
 
@@ -152,8 +152,8 @@ func (pu *ParallelUnit) ClusteringCoefficient() (map[graph.Identifier]float64, f
 //   - The rich club coefficient as a float64.
 func (u *Unit) RichClubCoefficient(k int) float64 {
 	g := u.graph
-	matrix := g.ToMatrix() // Get adjacency matrix representation of the graph.
-	n := len(matrix)       // Number of nodes in the graph.
+	matrix := g.Matrix() // Get adjacency matrix representation of the graph.
+	n := len(matrix)     // Number of nodes in the graph.
 
 	// Identify nodes with degree >= k
 	nodes := []int{}
@@ -199,8 +199,8 @@ func (u *Unit) RichClubCoefficient(k int) float64 {
 //   - The rich club coefficient as a float64.
 func (pu *ParallelUnit) RichClubCoefficient(k int) float64 {
 	g := pu.graph
-	matrix := g.ToMatrix() // Get adjacency matrix representation of the graph.
-	n := len(matrix)       // Number of nodes in the graph.
+	matrix := g.Matrix() // Get adjacency matrix representation of the graph.
+	n := len(matrix)     // Number of nodes in the graph.
 
 	// Identify nodes with degree >= k in parallel
 	nodesChan := make(chan int, n)

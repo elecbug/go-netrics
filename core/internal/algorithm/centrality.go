@@ -4,7 +4,7 @@ import (
 	"math"
 	"sync"
 
-	"github.com/elecbug/go-netrics/graph"
+	"github.com/elecbug/go-netrics/core/internal/graph"
 )
 
 // BetweennessCentrality computes the betweenness centrality of each node in the graph for a Unit.
@@ -12,7 +12,7 @@ import (
 //
 // Returns:
 //   - A map where the keys are node identifiers and the values are the betweenness centrality scores.
-func (u *Unit) BetweennessCentrality() map[graph.Identifier]float64 {
+func (u *Unit) BetweennessCentrality() map[graph.NodeID]float64 {
 	g := u.graph
 
 	if !g.IsUpdated() || !u.updated {
@@ -20,11 +20,11 @@ func (u *Unit) BetweennessCentrality() map[graph.Identifier]float64 {
 		u.computePaths()
 	}
 
-	centrality := make(map[graph.Identifier]float64)
+	centrality := make(map[graph.NodeID]float64)
 
 	// Initialize centrality scores for all nodes to 0.
 	for i := 0; i < g.NodeCount(); i++ {
-		centrality[graph.Identifier(i)] = 0
+		centrality[graph.NodeID(i)] = 0
 	}
 
 	// Count how many times each node appears on the shortest paths.
@@ -55,7 +55,7 @@ func (u *Unit) BetweennessCentrality() map[graph.Identifier]float64 {
 //
 // Returns:
 //   - A map where the keys are node identifiers and the values are the betweenness centrality scores.
-func (pu *ParallelUnit) BetweennessCentrality() map[graph.Identifier]float64 {
+func (pu *ParallelUnit) BetweennessCentrality() map[graph.NodeID]float64 {
 	g := pu.graph
 
 	if !g.IsUpdated() || !pu.updated {
@@ -63,16 +63,16 @@ func (pu *ParallelUnit) BetweennessCentrality() map[graph.Identifier]float64 {
 		pu.computePaths()
 	}
 
-	centrality := make(map[graph.Identifier]float64)
+	centrality := make(map[graph.NodeID]float64)
 
 	// Initialize centrality scores for all nodes to 0.
 	for i := 0; i < g.NodeCount(); i++ {
-		centrality[graph.Identifier(i)] = 0
+		centrality[graph.NodeID(i)] = 0
 	}
 
 	// Define a result type to collect intermediate centrality counts.
 	type result struct {
-		node  graph.Identifier
+		node  graph.NodeID
 		count float64
 	}
 
@@ -123,21 +123,21 @@ func (pu *ParallelUnit) BetweennessCentrality() map[graph.Identifier]float64 {
 //
 // Returns:
 //   - A map where the keys are node identifiers and the values are the degree centrality scores.
-func (u *Unit) DegreeCentrality() map[graph.Identifier]float64 {
+func (u *Unit) DegreeCentrality() map[graph.NodeID]float64 {
 	g := u.graph
-	centrality := make(map[graph.Identifier]float64)
+	centrality := make(map[graph.NodeID]float64)
 
 	// Initialize centrality scores for all nodes to 0.
 	for i := 0; i < g.NodeCount(); i++ {
-		centrality[graph.Identifier(i)] = 0
+		centrality[graph.NodeID(i)] = 0
 	}
 
 	// Calculate the degree for each node by counting direct neighbors.
-	matrix := g.ToMatrix()
+	matrix := g.Matrix()
 	for i, row := range matrix {
 		for _, value := range row {
 			if value != graph.INF {
-				centrality[graph.Identifier(i)]++
+				centrality[graph.NodeID(i)]++
 			}
 		}
 	}
@@ -158,19 +158,19 @@ func (u *Unit) DegreeCentrality() map[graph.Identifier]float64 {
 //
 // Returns:
 //   - A map where the keys are node identifiers and the values are the degree centrality scores.
-func (pu *ParallelUnit) DegreeCentrality() map[graph.Identifier]float64 {
+func (pu *ParallelUnit) DegreeCentrality() map[graph.NodeID]float64 {
 	g := pu.graph
-	centrality := make(map[graph.Identifier]float64)
+	centrality := make(map[graph.NodeID]float64)
 
 	// Initialize centrality scores for all nodes to 0.
 	for i := 0; i < g.NodeCount(); i++ {
-		centrality[graph.Identifier(i)] = 0
+		centrality[graph.NodeID(i)] = 0
 	}
 
-	matrix := g.ToMatrix()
+	matrix := g.Matrix()
 	var wg sync.WaitGroup
 	resultChan := make(chan struct {
-		node  graph.Identifier
+		node  graph.NodeID
 		count float64
 	}, g.NodeCount())
 
@@ -187,9 +187,9 @@ func (pu *ParallelUnit) DegreeCentrality() map[graph.Identifier]float64 {
 				}
 			}
 			resultChan <- struct {
-				node  graph.Identifier
+				node  graph.NodeID
 				count float64
-			}{node: graph.Identifier(nodeIndex), count: count}
+			}{node: graph.NodeID(nodeIndex), count: count}
 		}(i)
 	}
 
@@ -220,9 +220,9 @@ func (pu *ParallelUnit) DegreeCentrality() map[graph.Identifier]float64 {
 //
 // Returns:
 //   - A map where the keys are node identifiers and the values are the eigenvector centrality scores.
-func (u *Unit) EigenvectorCentrality(maxIter int, tol float64) map[graph.Identifier]float64 {
+func (u *Unit) EigenvectorCentrality(maxIter int, tol float64) map[graph.NodeID]float64 {
 	g := u.graph
-	matrix := g.ToMatrix()
+	matrix := g.Matrix()
 	n := len(matrix)
 
 	// Initialize centrality scores with 1/n
@@ -238,7 +238,7 @@ func (u *Unit) EigenvectorCentrality(maxIter int, tol float64) map[graph.Identif
 		for i := 0; i < n; i++ {
 			for j := 0; j < n; j++ {
 				if matrix[i][j] != graph.INF {
-					newCentrality[i] += float64(matrix[i][j].Int()) * centrality[j]
+					newCentrality[i] += float64(matrix[i][j].ToInt()) * centrality[j]
 				}
 			}
 		}
@@ -268,9 +268,9 @@ func (u *Unit) EigenvectorCentrality(maxIter int, tol float64) map[graph.Identif
 	}
 
 	// Convert to map for output
-	result := make(map[graph.Identifier]float64)
+	result := make(map[graph.NodeID]float64)
 	for i := 0; i < n; i++ {
-		result[graph.Identifier(i)] = centrality[i]
+		result[graph.NodeID(i)] = centrality[i]
 	}
 
 	return result
@@ -281,9 +281,9 @@ func (u *Unit) EigenvectorCentrality(maxIter int, tol float64) map[graph.Identif
 //
 // Returns:
 //   - A map where the keys are node identifiers and the values are the eigenvector centrality scores.
-func (pu *ParallelUnit) EigenvectorCentrality(maxIter int, tol float64) map[graph.Identifier]float64 {
+func (pu *ParallelUnit) EigenvectorCentrality(maxIter int, tol float64) map[graph.NodeID]float64 {
 	g := pu.graph
-	matrix := g.ToMatrix()
+	matrix := g.Matrix()
 	n := len(matrix)
 
 	// Initialize centrality scores with 1/n
@@ -305,7 +305,7 @@ func (pu *ParallelUnit) EigenvectorCentrality(maxIter int, tol float64) map[grap
 				defer wg.Done()
 				for j := 0; j < n; j++ {
 					if matrix[node][j] != graph.INF {
-						newCentrality[node] += float64(matrix[node][j].Int()) * centrality[j]
+						newCentrality[node] += float64(matrix[node][j].ToInt()) * centrality[j]
 					}
 				}
 			}(i)
@@ -338,9 +338,9 @@ func (pu *ParallelUnit) EigenvectorCentrality(maxIter int, tol float64) map[grap
 	}
 
 	// Convert to map for output
-	result := make(map[graph.Identifier]float64)
+	result := make(map[graph.NodeID]float64)
 	for i := 0; i < n; i++ {
-		result[graph.Identifier(i)] = centrality[i]
+		result[graph.NodeID(i)] = centrality[i]
 	}
 
 	return result

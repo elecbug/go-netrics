@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/elecbug/go-netrics/graph"
+	"github.com/elecbug/go-netrics/core/internal/graph"
 )
 
 func TestEfficiency(t *testing.T) {
 	cap := 30
-	g := graph.NewGraph(graph.UndirectedUnweighted, cap)
+	g := graph.NewGraph(graph.UNDIRECTED_UNWEIGHTED, cap)
 
 	for i := 0; i < cap; i++ {
 		g.AddNode(fmt.Sprintf("%4d", i))
@@ -21,10 +21,10 @@ func TestEfficiency(t *testing.T) {
 
 	for i := 0; i < g.NodeCount()*g.NodeCount()/10; i++ {
 		r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(i)))
-		from := graph.Identifier(r.Intn(g.NodeCount()))
+		from := graph.NodeID(r.Intn(g.NodeCount()))
 
 		r = rand.New(rand.NewSource(time.Now().UnixNano() + int64(i*i)))
-		to := graph.Identifier(r.Intn(g.NodeCount()))
+		to := graph.NodeID(r.Intn(g.NodeCount()))
 
 		// t.Logf("%d - %d", from, to)
 

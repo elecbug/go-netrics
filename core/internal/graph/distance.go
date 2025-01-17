@@ -12,9 +12,9 @@ type Distance uint
 // It is used to denote an unreachable state or maximum possible distance.
 const INF = Distance(math.MaxUint)
 
-// Int converts the Distance type to an int.
+// ToInt converts the Distance type to an int.
 // This method is useful when an integer representation of the edge weight is required.
-func (w Distance) Int() int {
+func (w Distance) ToInt() int {
 	return int(w.uint())
 }
 

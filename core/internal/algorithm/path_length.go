@@ -1,7 +1,7 @@
 package algorithm
 
 import (
-	"github.com/elecbug/go-netrics/graph"
+	"github.com/elecbug/go-netrics/core/internal/graph"
 )
 
 // AverageShortestPathLength computes the average shortest path length in the graph.
