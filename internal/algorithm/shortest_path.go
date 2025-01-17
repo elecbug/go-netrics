@@ -4,7 +4,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/elecbug/go-netrics/core/internal/graph"
+	"github.com/elecbug/go-netrics/internal/graph"
 )
 
 // computePaths calculates all shortest paths between every pair of nodes in the graph for a Unit.

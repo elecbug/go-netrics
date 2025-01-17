@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"github.com/elecbug/go-netrics/core/internal/graph/internal/graph_err" // Custom error package
+	"github.com/elecbug/go-netrics/internal/graph/internal/graph_err" // Custom error package
 )
 
 // Node represents a node in the graph.

@@ -6,11 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/elecbug/go-netrics/core/internal/graph"
+	"github.com/elecbug/go-netrics/internal/graph"
 )
 
-func TestAverageShortestPathLength(t *testing.T) {
-	cap := 200
+func TestCoefficient(t *testing.T) {
+	cap := 30
 	g := graph.NewGraph(graph.UNDIRECTED_UNWEIGHTED, cap)
 
 	for i := 0; i < cap; i++ {
@@ -19,7 +19,7 @@ func TestAverageShortestPathLength(t *testing.T) {
 
 	// t.Logf("%s\n", spew.Sdump(g))
 
-	for i := 0; i < g.NodeCount()*g.NodeCount()/100; i++ {
+	for i := 0; i < g.NodeCount()*g.NodeCount()/10; i++ {
 		r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(i)))
 		from := graph.NodeID(r.Intn(g.NodeCount()))
 
@@ -32,17 +32,14 @@ func TestAverageShortestPathLength(t *testing.T) {
 	}
 
 	pu := NewParallelUnit(g, 40)
-	dia := pu.Diameter()
-	aspl := pu.AverageShortestPathLength()
-	pspl := pu.PercentileShortestPathLength(0.5)
-	t.Logf("diameter: %d, ASPL: %f, PSPL: %d\n", dia.Distance(), aspl, pspl)
+
+	glo, loc := pu.ClusteringCoefficient()
+	t.Logf("clustering coef: %v, %f\n", glo, loc)
+	t.Logf("rich club coef: %v\n", pu.RichClubCoefficient(5))
 
 	u := NewUnit(g)
-	dia = u.Diameter()
-	aspl = u.AverageShortestPathLength()
-	t.Logf("diameter: %d, ASPL: %f\n", dia.Distance(), aspl)
 
-	for i := 0.0; i < 1; i += 0.1 {
-		t.Logf("%f: %d", i, u.PercentileShortestPathLength(i))
-	}
+	glo, loc = u.ClusteringCoefficient()
+	t.Logf("clustering coef: %v, %f\n", glo, loc)
+	t.Logf("rich club coef: %v\n", u.RichClubCoefficient(5))
 }

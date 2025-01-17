@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/elecbug/go-netrics/core/internal/graph"
+	"github.com/elecbug/go-netrics/internal/graph"
 )
 
-func TestCoefficient(t *testing.T) {
+func TestEfficiency(t *testing.T) {
 	cap := 30
 	g := graph.NewGraph(graph.UNDIRECTED_UNWEIGHTED, cap)
 
@@ -33,13 +33,11 @@ func TestCoefficient(t *testing.T) {
 
 	pu := NewParallelUnit(g, 40)
 
-	glo, loc := pu.ClusteringCoefficient()
-	t.Logf("clustering coef: %v, %f\n", glo, loc)
-	t.Logf("rich club coef: %v\n", pu.RichClubCoefficient(5))
+	t.Logf("local eff: %v\n", pu.LocalEfficiency())
+	t.Logf("global eff: %v\n", pu.GlobalEfficiency())
 
 	u := NewUnit(g)
 
-	glo, loc = u.ClusteringCoefficient()
-	t.Logf("clustering coef: %v, %f\n", glo, loc)
-	t.Logf("rich club coef: %v\n", u.RichClubCoefficient(5))
+	t.Logf("local eff: %v\n", u.LocalEfficiency())
+	t.Logf("global eff: %v\n", u.GlobalEfficiency())
 }

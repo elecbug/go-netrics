@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/elecbug/go-netrics/core/internal/graph"
+	"github.com/elecbug/go-netrics/internal/graph"
 )
 
 func TestCentrality(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/elecbug/go-netrics/core/internal/graph/internal/graph_err" // Custom error package
+	"github.com/elecbug/go-netrics/internal/graph/internal/graph_err" // Custom error package
 )
 
 // Graph represents the core structure of a graph.

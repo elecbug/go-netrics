@@ -6,11 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/elecbug/go-netrics/core/internal/graph"
+	"github.com/elecbug/go-netrics/internal/graph"
 )
 
-func TestEfficiency(t *testing.T) {
-	cap := 30
+func TestAverageShortestPathLength(t *testing.T) {
+	cap := 200
 	g := graph.NewGraph(graph.UNDIRECTED_UNWEIGHTED, cap)
 
 	for i := 0; i < cap; i++ {
@@ -19,7 +19,7 @@ func TestEfficiency(t *testing.T) {
 
 	// t.Logf("%s\n", spew.Sdump(g))
 
-	for i := 0; i < g.NodeCount()*g.NodeCount()/10; i++ {
+	for i := 0; i < g.NodeCount()*g.NodeCount()/100; i++ {
 		r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(i)))
 		from := graph.NodeID(r.Intn(g.NodeCount()))
 
@@ -32,12 +32,17 @@ func TestEfficiency(t *testing.T) {
 	}
 
 	pu := NewParallelUnit(g, 40)
-
-	t.Logf("local eff: %v\n", pu.LocalEfficiency())
-	t.Logf("global eff: %v\n", pu.GlobalEfficiency())
+	dia := pu.Diameter()
+	aspl := pu.AverageShortestPathLength()
+	pspl := pu.PercentileShortestPathLength(0.5)
+	t.Logf("diameter: %d, ASPL: %f, PSPL: %d\n", dia.Distance(), aspl, pspl)
 
 	u := NewUnit(g)
+	dia = u.Diameter()
+	aspl = u.AverageShortestPathLength()
+	t.Logf("diameter: %d, ASPL: %f\n", dia.Distance(), aspl)
 
-	t.Logf("local eff: %v\n", u.LocalEfficiency())
-	t.Logf("global eff: %v\n", u.GlobalEfficiency())
+	for i := 0.0; i < 1; i += 0.1 {
+		t.Logf("%f: %d", i, u.PercentileShortestPathLength(i))
+	}
 }
