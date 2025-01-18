@@ -56,9 +56,9 @@ func (g *GraphParams) ToParallelUnit(core uint) *ParallelUnit {
 	return algorithm.NewParallelUnit(g.Graph, core)
 }
 
-func (g *GraphParams) ShortestPath(start, end NodeID) Path {
-	return &PathParams{algorithm.ShortestPath(g.Graph, start, end)}
-}
+// func (g *GraphParams) ShortestPath(start, end NodeID) Path {
+// 	return &PathParams{algorithm.ShortestPath(g.Graph, start, end)}
+// }
 
 const INF = Distance(graph.INF)
 
