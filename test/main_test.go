@@ -38,6 +38,7 @@ func TestMain(t *testing.T) {
 		u := g.ToUnit()
 		s := time.Now()
 
+		t.Logf("\nShortestPath: %v\n", spew.Sdump(u.ShortestPath(0, netrics.NodeID(cap-1))))
 		t.Logf("\nAverageShortestPathLength: %v\n", spew.Sdump(u.AverageShortestPathLength()))
 		t.Logf("\nBetweennessCentrality: %v\n", spew.Sdump(u.BetweennessCentrality()))
 		t.Logf("\nClusteringCoefficient: %v\n", spew.Sdump(u.ClusteringCoefficient()))
@@ -57,6 +58,7 @@ func TestMain(t *testing.T) {
 		pu := g.ToParallelUnit(20)
 		s := time.Now()
 
+		t.Logf("\nShortestPath: %v\n", spew.Sdump(pu.ShortestPath(0, netrics.NodeID(cap-1))))
 		t.Logf("\nAverageShortestPathLength: %v\n", spew.Sdump(pu.AverageShortestPathLength()))
 		t.Logf("\nBetweennessCentrality: %v\n", spew.Sdump(pu.BetweennessCentrality()))
 		t.Logf("\nClusteringCoefficient: %v\n", spew.Sdump(pu.ClusteringCoefficient()))
