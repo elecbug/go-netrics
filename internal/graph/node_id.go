@@ -14,3 +14,5 @@ func (id NodeID) String() string {
 	// Use fmt.Sprintf to format the Identifier as a decimal string.
 	return fmt.Sprintf("%d", id)
 }
+
+// const ALL_NODE = NodeID(math.MaxUint)

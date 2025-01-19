@@ -56,13 +56,15 @@ func (g *GraphParams) ToParallelUnit(core uint) *ParallelUnit {
 	return algorithm.NewParallelUnit(g.Graph, core)
 }
 
-func (g *GraphParams) ShortestPath(start, end NodeID) Path {
-	return &PathParams{algorithm.ShortestPath(g.Graph, start, end)}
-}
+// func (g *GraphParams) ShortestPath(start, end NodeID) Path {
+// 	return &PathParams{algorithm.ShortestPath(g.Graph, start, end)}
+// }
 
-const INF = graph.INF
+const INF = Distance(graph.INF)
 
-const DIRECTED_UNWEIGHTED = graph.DIRECTED_UNWEIGHTED
-const DIRECTED_WEIGHTED = graph.DIRECTED_WEIGHTED
-const UNDIRECTED_UNWEIGHTED = graph.UNDIRECTED_UNWEIGHTED
-const UNDIRECTED_WEIGHTED = graph.UNDIRECTED_WEIGHTED
+const (
+	DIRECTED_UNWEIGHTED   = GraphType(graph.DIRECTED_UNWEIGHTED)
+	DIRECTED_WEIGHTED     = GraphType(graph.DIRECTED_WEIGHTED)
+	UNDIRECTED_UNWEIGHTED = GraphType(graph.UNDIRECTED_UNWEIGHTED)
+	UNDIRECTED_WEIGHTED   = GraphType(graph.UNDIRECTED_WEIGHTED)
+)

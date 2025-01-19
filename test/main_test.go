@@ -32,31 +32,43 @@ func TestMain(t *testing.T) {
 		g.AddEdge(from, to)
 	}
 
-	t.Log(g.String())
+	t.Logf("\n%s\n", g.String())
 
-	u := g.ToUnit()
+	{
+		u := g.ToUnit()
+		s := time.Now()
 
-	t.Logf("AverageShortestPathLength: %v\n", spew.Sdump(u.AverageShortestPathLength()))
-	t.Logf("BetweennessCentrality: %v\n", spew.Sdump(u.BetweennessCentrality()))
-	t.Logf("ClusteringCoefficient: %v\n", spew.Sdump(u.ClusteringCoefficient()))
-	t.Logf("DegreeCentrality: %v\n", spew.Sdump(u.DegreeCentrality()))
-	t.Logf("Diameter: %v\n", spew.Sdump(u.Diameter()))
-	t.Logf("EigenvectorCentrality: %v\n", spew.Sdump(u.EigenvectorCentrality(1000, 1e-6)))
-	t.Logf("GlobalEfficiency: %v\n", spew.Sdump(u.GlobalEfficiency()))
-	t.Logf("LocalEfficiency: %v\n", spew.Sdump(u.LocalEfficiency()))
-	t.Logf("PercentileShortestPathLength: %v\n", spew.Sdump(u.PercentileShortestPathLength(30)))
-	t.Logf("RichClubCoefficient: %v\n", spew.Sdump(u.RichClubCoefficient(2)))
+		t.Logf("\nAverageShortestPathLength: %v\n", spew.Sdump(u.AverageShortestPathLength()))
+		t.Logf("\nBetweennessCentrality: %v\n", spew.Sdump(u.BetweennessCentrality()))
+		t.Logf("\nClusteringCoefficient: %v\n", spew.Sdump(u.ClusteringCoefficient()))
+		t.Logf("\nDegreeCentrality: %v\n", spew.Sdump(u.DegreeCentrality()))
+		t.Logf("\nDiameter: %v\n", spew.Sdump(u.Diameter()))
+		t.Logf("\nEigenvectorCentrality: %v\n", spew.Sdump(u.EigenvectorCentrality(1000, 1e-6)))
+		t.Logf("\nGlobalEfficiency: %v\n", spew.Sdump(u.GlobalEfficiency()))
+		t.Logf("\nLocalEfficiency: %v\n", spew.Sdump(u.LocalEfficiency()))
+		t.Logf("\nPercentileShortestPathLength: %v\n", spew.Sdump(u.PercentileShortestPathLength(30)))
+		t.Logf("\nRichClubCoefficient: %v\n", spew.Sdump(u.RichClubCoefficient(2)))
 
-	pu := g.ToParallelUnit(20)
+		duration := time.Since(s)
+		t.Logf("execution time: %s", duration)
+	}
+	{
 
-	t.Logf("AverageShortestPathLength: %v\n", spew.Sdump(pu.AverageShortestPathLength()))
-	t.Logf("BetweennessCentrality: %v\n", spew.Sdump(pu.BetweennessCentrality()))
-	t.Logf("ClusteringCoefficient: %v\n", spew.Sdump(pu.ClusteringCoefficient()))
-	t.Logf("DegreeCentrality: %v\n", spew.Sdump(pu.DegreeCentrality()))
-	t.Logf("Diameter: %v\n", spew.Sdump(pu.Diameter()))
-	t.Logf("EigenvectorCentrality: %v\n", spew.Sdump(pu.EigenvectorCentrality(1000, 1e-6)))
-	t.Logf("GlobalEfficiency: %v\n", spew.Sdump(pu.GlobalEfficiency()))
-	t.Logf("LocalEfficiency: %v\n", spew.Sdump(pu.LocalEfficiency()))
-	t.Logf("PercentileShortestPathLength: %v\n", spew.Sdump(pu.PercentileShortestPathLength(30)))
-	t.Logf("RichClubCoefficient: %v\n", spew.Sdump(pu.RichClubCoefficient(2)))
+		pu := g.ToParallelUnit(20)
+		s := time.Now()
+
+		t.Logf("\nAverageShortestPathLength: %v\n", spew.Sdump(pu.AverageShortestPathLength()))
+		t.Logf("\nBetweennessCentrality: %v\n", spew.Sdump(pu.BetweennessCentrality()))
+		t.Logf("\nClusteringCoefficient: %v\n", spew.Sdump(pu.ClusteringCoefficient()))
+		t.Logf("\nDegreeCentrality: %v\n", spew.Sdump(pu.DegreeCentrality()))
+		t.Logf("\nDiameter: %v\n", spew.Sdump(pu.Diameter()))
+		t.Logf("\nEigenvectorCentrality: %v\n", spew.Sdump(pu.EigenvectorCentrality(1000, 1e-6)))
+		t.Logf("\nGlobalEfficiency: %v\n", spew.Sdump(pu.GlobalEfficiency()))
+		t.Logf("\nLocalEfficiency: %v\n", spew.Sdump(pu.LocalEfficiency()))
+		t.Logf("\nPercentileShortestPathLength: %v\n", spew.Sdump(pu.PercentileShortestPathLength(30)))
+		t.Logf("\nRichClubCoefficient: %v\n", spew.Sdump(pu.RichClubCoefficient(2)))
+
+		duration := time.Since(s)
+		t.Logf("execution time: %s", duration)
+	}
 }

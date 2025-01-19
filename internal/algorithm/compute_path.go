@@ -23,7 +23,7 @@ func (u *Unit) computePaths() {
 				continue
 			}
 
-			path := ShortestPath(g, start, end)
+			path := shortestPath(g, start, end)
 
 			if path.Distance() != graph.INF {
 				u.shortestPaths = append(u.shortestPaths, *path)
@@ -68,7 +68,7 @@ func (pu *ParallelUnit) computePaths() {
 		go func() {
 			defer wg.Done()
 			for job := range jobChan {
-				path := ShortestPath(g, job.start, job.end)
+				path := shortestPath(g, job.start, job.end)
 
 				if path.Distance() != graph.INF {
 					resultChan <- *path
@@ -109,7 +109,7 @@ func (pu *ParallelUnit) computePaths() {
 	g.Update()
 }
 
-// ShortestPath computes the shortest path between two nodes in a graph.
+// shortestPath computes the shortest path between two nodes in a graph.
 //
 // Parameters:
 //   - g: The graph to perform the computation on.
@@ -119,7 +119,7 @@ func (pu *ParallelUnit) computePaths() {
 // Returns:
 //   - A graph.Path containing the shortest path and its total distance.
 //   - If no path exists, the returned Path has distance INF and an empty node sequence.
-func ShortestPath(g *graph.Graph, start, end graph.NodeID) *graph.Path {
+func shortestPath(g *graph.Graph, start, end graph.NodeID) *graph.Path {
 	if g.Type() == graph.DIRECTED_WEIGHTED || g.Type() == graph.UNDIRECTED_WEIGHTED {
 		return weightedShortestPath(g.Matrix(), start, end)
 	} else if g.Type() == graph.DIRECTED_UNWEIGHTED || g.Type() == graph.UNDIRECTED_UNWEIGHTED {
