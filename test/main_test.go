@@ -54,7 +54,6 @@ func TestMain(t *testing.T) {
 		t.Logf("execution time: %s", duration)
 	}
 	{
-
 		pu := g.ToParallelUnit(20)
 		s := time.Now()
 

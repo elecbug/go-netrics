@@ -90,7 +90,6 @@ func main() {
 		fmt.Printf("execution time: %s", duration)
 	}
 	{
-
 		pu := g.ToParallelUnit(20)
 		s := time.Now()
 
